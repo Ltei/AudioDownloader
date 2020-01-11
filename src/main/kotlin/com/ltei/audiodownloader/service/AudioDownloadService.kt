@@ -2,15 +2,15 @@ package com.ltei.audiodownloader.service
 
 import com.ltei.audiodownloader.misc.debug.Logger
 import com.ltei.audiodownloader.model.AudioDownload
-import com.ltei.audiodownloader.model.DownloadProgressListener
+import com.ltei.audiodownloader.model.DownloadProgressInterceptor
 import com.ltei.audiodownloader.model.Model
-import com.ltei.audiodownloader.ui.ovh.AudioDownloadListView
-import javafx.scene.control.Alert
 
-class AudioDownloadService(val listView: AudioDownloadListView) {
+class AudioDownloadService {
 
     private val logger = Logger(AudioDownloadService::class.java)
     private var thread: RunnerThread? = null
+
+    val listeners = mutableListOf<Listener>()
 
     fun start() {
         if (thread?.isKilled != false) {
@@ -30,7 +30,7 @@ class AudioDownloadService(val listView: AudioDownloadListView) {
 
         override fun run() {
             val model = Model.instance
-            while (true) {
+            while (!isKilled) {
                 val download = synchronized(model.audioDownloads) {
                     val index = model.audioDownloads.indexOfFirst { it.state is AudioDownload.State.Finished }
                     when {
@@ -41,33 +41,39 @@ class AudioDownloadService(val listView: AudioDownloadListView) {
                 } ?: break
 
                 download.state = AudioDownload.State.Starting
-                listView.findCell(download)?.updateViewOnStateChanged()
-                logger.debug("Download starting...")
+                listeners.forEach { it.onDownloadStarted(download) }
                 val progressState = AudioDownload.State.InProgress(-1, -1)
-                download.source.downloadTo(download.outputFile, listener = object : DownloadProgressListener {
+                download.source.downloadTo(download.outputFile, interceptor = object : DownloadProgressInterceptor {
                     override fun shouldStop(): Boolean = isKilled
                     override fun onProgress(progress: Long, total: Long) {
-                        logger.debug("Download progress : $progress / $total")
                         progressState.progress = progress
                         progressState.total = total
                         download.state = progressState
-                        listView.findCell(download)?.updateViewOnStateChanged()
+                        listeners.forEach { it.onDownloadProgress(download, progress, total) }
                     }
                 })
-                logger.debug("Download finished!")
-                download.state = AudioDownload.State.Finished
-                listView.findCell(download)?.updateViewOnStateChanged()
-
-                Alert(Alert.AlertType.CONFIRMATION).apply {
-                    title = "Success"
-                    contentText = "Audio file downloaded to ${download.outputFile.absolutePath}"
-                }.showAndWait()
+                if (isKilled) {
+                    logger.debug("Download finished!")
+                    download.state = AudioDownload.State.Finished
+                    listeners.forEach { it.onDownloadFinished(download) }
+                } else {
+                    logger.debug("Download canceled!")
+                    download.state = AudioDownload.State.Canceled
+                    listeners.forEach { it.onDownloadCanceled(download) }
+                }
             }
         }
 
         fun kill() {
             isKilled = true
         }
+    }
+
+    interface Listener {
+        fun onDownloadStarted(download: AudioDownload)
+        fun onDownloadProgress(download: AudioDownload, progress: Long, total: Long)
+        fun onDownloadFinished(download: AudioDownload)
+        fun onDownloadCanceled(download: AudioDownload)
     }
 
 }

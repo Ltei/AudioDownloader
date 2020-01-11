@@ -21,6 +21,7 @@ private class ListCellImpl<T>(val objectViewHolder: ObjectViewHolder<T>) : ListC
     }
 
     override fun updateItem(item: T?, empty: Boolean) {
+        if (empty && item != null) throw IllegalStateException()
         objectViewHolder.boundObject = item
         objectViewHolder.updateViewFromObject()
     }

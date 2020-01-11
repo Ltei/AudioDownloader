@@ -10,12 +10,12 @@ sealed class AudioSourceUrl(val sourceName: String, val rawUrl: String, val audi
 
     abstract fun getAudioName(): String?
 
-    abstract fun downloadTo(file: File, listener: DownloadProgressListener? = null)
+    abstract fun downloadTo(file: File, interceptor: DownloadProgressInterceptor? = null)
 
     protected fun downloadFromNewPipeStreamInfo(
         streamInfo: StreamInfo,
         file: File,
-        listener: DownloadProgressListener?
+        interceptor: DownloadProgressInterceptor?
     ) {
         val streams = streamInfo.audioStreams.sortedByDescending { stream ->
             try {
@@ -27,7 +27,7 @@ sealed class AudioSourceUrl(val sourceName: String, val rawUrl: String, val audi
         }
         for (stream in streams) {
             try {
-                downloadRawUrlTo(stream.getUrl(), file, listener)
+                downloadRawUrlTo(stream.getUrl(), file, interceptor)
                 return
             } catch (t: Throwable) {
                 t.printStackTrace()
@@ -36,18 +36,18 @@ sealed class AudioSourceUrl(val sourceName: String, val rawUrl: String, val audi
         throw IllegalArgumentException()
     }
 
-    protected fun downloadRawUrlTo(url: String, file: File, listener: DownloadProgressListener?) {
+    protected fun downloadRawUrlTo(url: String, file: File, interceptor: DownloadProgressInterceptor?) {
         val connection = URL(url).openConnection()
         val inputStream = connection.getInputStream()
         val outputStream = file.outputStream()
-        inputStream.transferTo(outputStream, listener = listener, totalSize = connection.contentLengthLong)
+        inputStream.transferTo(outputStream, interceptor = interceptor, totalSize = connection.contentLengthLong)
         outputStream.close()
     }
 
     class Raw(rawUrl: String, audioExtension: String) : AudioSourceUrl("Raw", rawUrl, audioExtension) {
         override fun getAudioName(): String? = null
-        override fun downloadTo(file: File, listener: DownloadProgressListener?) =
-            downloadRawUrlTo(rawUrl, file, listener)
+        override fun downloadTo(file: File, interceptor: DownloadProgressInterceptor?) =
+            downloadRawUrlTo(rawUrl, file, interceptor)
 
         override fun toString(): String = "(Raw url) $rawUrl"
     }
@@ -57,9 +57,9 @@ sealed class AudioSourceUrl(val sourceName: String, val rawUrl: String, val audi
 
         fun getVideoSnippet(): com.google.api.services.youtube.model.Video? = null
 
-        override fun downloadTo(file: File, listener: DownloadProgressListener?) {
+        override fun downloadTo(file: File, interceptor: DownloadProgressInterceptor?) {
             val streamInfo = StreamInfo.getInfo(ServiceList.YouTube, rawUrl)
-            downloadFromNewPipeStreamInfo(streamInfo, file, listener)
+            downloadFromNewPipeStreamInfo(streamInfo, file, interceptor)
         }
 
         override fun toString(): String = "(YouTube) $videoId"
@@ -67,9 +67,9 @@ sealed class AudioSourceUrl(val sourceName: String, val rawUrl: String, val audi
 
     class SoundCloud(rawUrl: String) : AudioSourceUrl("SoundCloud", rawUrl, "mp3") {
         override fun getAudioName(): String? = null
-        override fun downloadTo(file: File, listener: DownloadProgressListener?) {
+        override fun downloadTo(file: File, interceptor: DownloadProgressInterceptor?) {
             val streamInfo = StreamInfo.getInfo(ServiceList.SoundCloud, rawUrl)
-            downloadFromNewPipeStreamInfo(streamInfo, file, listener)
+            downloadFromNewPipeStreamInfo(streamInfo, file, interceptor)
         }
 
         override fun toString(): String = "(SoundCloud) $rawUrl"

@@ -6,7 +6,7 @@ import tornadofx.asBackground
 object UIStylizer {
 
     fun setupCardLayout(region: Region) {
-        region.background = UIColors.GRAY.asBackground(UIConstants.BASE_RADII)
+        region.background = UIColors.PRIMARY.asBackground(UIConstants.BASE_RADII)
         region.padding = UIConstants.BASE_INSETS
     }
 

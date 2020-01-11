@@ -8,5 +8,5 @@ object UIConstants {
     const val BASE_SPACING = 10.0
 
     val BASE_INSETS = Insets(BASE_PADDING)
-    val BASE_RADII = CornerRadii(BASE_PADDING)
+    val BASE_RADII = CornerRadii(5.0)
 }

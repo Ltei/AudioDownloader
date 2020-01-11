@@ -3,14 +3,14 @@ package com.ltei.audiodownloader.ui
 import javafx.scene.paint.Color
 
 object UIColors {
-    val WHITE = Color.WHITE
-    val RED = colorOf("DD403A")
-    val GREEN = colorOf("697A21") // "B8B42D"
-    val BLUE = colorOf("0000FF")
+    val WHITE = Color.WHITE!!
+    val RED = colorOf("984447")
+    val GREEN = colorOf("9EE37D")
 
-    val DEFAULT_BUTTON = colorOf("005E7C")
+    val BACKGROUND = colorOf("101419")
+    val PRIMARY = colorOf("27313D")
+    val PRIMARY_LIGHT = colorOf("3E4D60")
 
-    val GRAY_LIGHT = colorOf("BBBBBB")
-    val GRAY = colorOf("888888")
-    val GRAY_DARK = colorOf("444444")
+    val DEFAULT_BUTTON = PRIMARY_LIGHT
+    val DEFAULT_TEXT = WHITE
 }

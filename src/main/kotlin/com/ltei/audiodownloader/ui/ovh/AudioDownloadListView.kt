@@ -29,6 +29,6 @@ class AudioDownloadListView(
         rootNode.items = boundObject?.asObservable()
     }
 
-    fun findCell(item: AudioDownload) = cells.find { it.boundObject == item }
+    fun findCell(item: AudioDownload) = cells.find { it.boundObject === item }
 
 }

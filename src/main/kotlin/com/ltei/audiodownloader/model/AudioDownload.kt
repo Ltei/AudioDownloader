@@ -13,6 +13,7 @@ data class AudioDownload(
         object Starting: State()
         class InProgress(var progress: Long, var total: Long): State()
         object Finished: State()
+        object Canceled: State()
     }
 
 }
