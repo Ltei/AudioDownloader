@@ -3,6 +3,7 @@ package com.ltei.audiodownloader.ui
 import com.ltei.audiodownloader.model.Model
 import com.ltei.audiodownloader.model.Preferences
 import com.ltei.audiodownloader.service.AudioDownloadService
+import com.ltei.audiodownloader.service.ContinuousUpdaterService
 import javafx.stage.Stage
 import tornadofx.App
 
@@ -19,12 +20,15 @@ class Application : App() {
         stage.titleProperty().unbind()
         stage.titleProperty().value = "AudioDownloader"
 
+//        audioDownloadService.start()
+        ContinuousUpdaterService.start()
         Runtime.getRuntime().addShutdownHook(ShutdownHook())
     }
 
     override fun stop() {
         super.stop()
         audioDownloadService.stop()
+        ContinuousUpdaterService.stop()
         Model.save()
         Preferences.save()
     }
@@ -32,6 +36,7 @@ class Application : App() {
     private class ShutdownHook : Thread() {
         override fun run() {
             audioDownloadService.stop()
+            ContinuousUpdaterService.stop()
             Model.save()
             Preferences.save()
         }

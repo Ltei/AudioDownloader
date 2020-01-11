@@ -8,12 +8,12 @@ data class AudioDownload(
     var state: State = State.Waiting
 ) {
 
-    sealed class State {
-        object Waiting: State()
-        object Starting: State()
-        class InProgress(var progress: Long, var total: Long): State()
-        object Finished: State()
-        object Canceled: State()
+    sealed class State(val name: String) {
+        object Waiting: State("Waiting")
+        object Starting: State("Starting")
+        class InProgress(var progress: Long, var total: Long): State("InProgress")
+        object Finished: State("Finished")
+        object Canceled: State("Canceled")
     }
 
 }

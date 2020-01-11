@@ -29,8 +29,8 @@ sealed class AudioSourceUrl(val sourceName: String, val rawUrl: String, val audi
             try {
                 downloadRawUrlTo(stream.getUrl(), file, interceptor)
                 return
-            } catch (t: Throwable) {
-                t.printStackTrace()
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
         throw IllegalArgumentException()

@@ -32,16 +32,11 @@ class AudioDownloadService {
             val model = Model.instance
             while (!isKilled) {
                 val download = synchronized(model.audioDownloads) {
-                    val index = model.audioDownloads.indexOfFirst { it.state is AudioDownload.State.Finished }
-                    when {
-                        index < 0 -> model.audioDownloads.lastOrNull()
-                        index == 0 -> null
-                        else -> model.audioDownloads[index - 1]
-                    }
+                    model.audioDownloads.lastOrNull { it.state is AudioDownload.State.Waiting }
                 } ?: break
 
                 download.state = AudioDownload.State.Starting
-                listeners.forEach { it.onDownloadStarted(download) }
+                listeners.forEach { it.onDownloadUpdate(download) }
                 val progressState = AudioDownload.State.InProgress(-1, -1)
                 download.source.downloadTo(download.outputFile, interceptor = object : DownloadProgressInterceptor {
                     override fun shouldStop(): Boolean = isKilled
@@ -49,19 +44,19 @@ class AudioDownloadService {
                         progressState.progress = progress
                         progressState.total = total
                         download.state = progressState
-                        listeners.forEach { it.onDownloadProgress(download, progress, total) }
+                        listeners.forEach { it.onDownloadUpdate(download) }
                     }
                 })
                 if (isKilled) {
-                    logger.debug("Download finished!")
-                    download.state = AudioDownload.State.Finished
-                    listeners.forEach { it.onDownloadFinished(download) }
-                } else {
                     logger.debug("Download canceled!")
                     download.state = AudioDownload.State.Canceled
-                    listeners.forEach { it.onDownloadCanceled(download) }
+                } else {
+                    logger.debug("Download finished!")
+                    download.state = AudioDownload.State.Finished
                 }
+                listeners.forEach { it.onDownloadUpdate(download) }
             }
+            listeners.forEach { it.onDownloadUpdate(null) }
         }
 
         fun kill() {
@@ -70,10 +65,7 @@ class AudioDownloadService {
     }
 
     interface Listener {
-        fun onDownloadStarted(download: AudioDownload)
-        fun onDownloadProgress(download: AudioDownload, progress: Long, total: Long)
-        fun onDownloadFinished(download: AudioDownload)
-        fun onDownloadCanceled(download: AudioDownload)
+        fun onDownloadUpdate(download: AudioDownload?)
     }
 
 }

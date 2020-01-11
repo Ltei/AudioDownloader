@@ -7,11 +7,11 @@ import com.ltei.audiodownloader.model.AudioSourceUrl
 import com.ltei.audiodownloader.model.Model
 import com.ltei.audiodownloader.model.Preferences
 import com.ltei.audiodownloader.service.AudioDownloadService
+import com.ltei.audiodownloader.service.ContinuousUpdaterService
 import com.ltei.audiodownloader.ui.base.BaseButton
 import com.ltei.audiodownloader.ui.base.BaseLabel
 import com.ltei.audiodownloader.ui.ovh.AudioDownloadListView
 import javafx.event.EventHandler
-import javafx.scene.control.Alert
 import javafx.scene.control.TextField
 import javafx.scene.control.TextInputDialog
 import javafx.scene.layout.HBox
@@ -48,13 +48,13 @@ class RootView : View() {
             prefWidth = Double.MAX_VALUE
 
             add(BaseButton("Keep on top (Off)").apply {
-                style = UIColors.RED.toTintStyleString()
+                style = UIColors.RED.toTextColorCssStyle()
                 setOnMouseClicked {
                     val keepOnTop = !Preferences.instance.keepScreenOnTop
                     Preferences.instance.keepScreenOnTop = keepOnTop
                     primaryStage.isAlwaysOnTop = keepOnTop
                     text = if (keepOnTop) "Keep on top (On)" else "Keep on top (Off)"
-                    style = if (keepOnTop) UIColors.GREEN.toTintStyleString() else UIColors.RED.toTintStyleString()
+                    style = if (keepOnTop) UIColors.GREEN.toTextColorCssStyle() else UIColors.RED.toTextColorCssStyle()
                 }
             }.apply {
                 prefWidth = 9999.0
@@ -152,31 +152,18 @@ class RootView : View() {
 
         audioDownloadListView.boundObject = Model.instance.audioDownloads
         audioDownloadListView.updateViewFromObject()
+
+        var currentDownload: AudioDownload? = null
+
         Application.audioDownloadService.listeners.add(object : AudioDownloadService.Listener {
-            override fun onDownloadStarted(download: AudioDownload) {
-                logger.debug("Download starting...")
-                audioDownloadListView.findCell(download)?.updateViewOnStateChanged()
-            }
-
-            override fun onDownloadProgress(download: AudioDownload, progress: Long, total: Long) {
-                logger.debug("Download progress : $progress / $total")
-                audioDownloadListView
-                    .findCell(download)
-                    ?.updateViewOnStateChanged()
-            }
-
-            override fun onDownloadFinished(download: AudioDownload) {
-                audioDownloadListView.findCell(download)?.updateViewOnStateChanged()
-                Alert(Alert.AlertType.CONFIRMATION).apply {
-                    title = "Success"
-                    contentText = "Audio file downloaded to ${download.outputFile.absolutePath}"
-                }.showAndWait()
-            }
-
-            override fun onDownloadCanceled(download: AudioDownload) {
-                audioDownloadListView.findCell(download)?.updateViewOnStateChanged()
+            override fun onDownloadUpdate(download: AudioDownload?) {
+                currentDownload = download
             }
         })
+
+        ContinuousUpdaterService.blocks.add {
+            currentDownload?.let { audioDownloadListView.findCell(it)?.updateViewOnStateChanged() }
+        }
     }
 
     companion object {

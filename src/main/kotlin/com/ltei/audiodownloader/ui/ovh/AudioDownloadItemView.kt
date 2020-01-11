@@ -1,8 +1,7 @@
 package com.ltei.audiodownloader.ui.ovh
 
 import com.ltei.audiodownloader.model.AudioDownload
-import com.ltei.audiodownloader.ui.UIConstants
-import com.ltei.audiodownloader.ui.UIStylizer
+import com.ltei.audiodownloader.ui.*
 import com.ltei.audiodownloader.ui.base.BaseLabel
 import javafx.application.Platform
 import javafx.scene.control.ProgressBar
@@ -33,42 +32,52 @@ class AudioDownloadItemView(override var boundObject: AudioDownload? = null) : V
         updateViewFromObject()
     }
 
-    private var lastPercentText: String? = null
+//    private var lastPercentText: String? = null
+//    private var lastUpdateTime: Long = 0
     fun updateViewOnStateChanged() {
         val state = boundObject?.state ?: return
 
         if (state is AudioDownload.State.InProgress) {
             val ratio = state.progress / state.total.toDouble()
             val percentText = "%.2f".format(100.0 * ratio)
-            if (percentText != lastPercentText) {
+            val time = System.currentTimeMillis()
+//            if (percentText != lastPercentText && time - lastUpdateTime > 100) {
                 val progressText = "%.2f".format(state.progress / 1000f)
                 val totalText = "%.2f".format(state.total / 1000f)
                 val text = "Download progress : $progressText/$totalText kb ($percentText%)."
                 Platform.runLater {
                     downloadStateLabel.text = text
-                    downloadProgressBar.isVisible = true
                     downloadProgressBar.progress = ratio
+                    UIColors.PRIMARY.applyTo(downloadProgressBar)
                 }
-                lastPercentText = percentText
-            }
+//                lastPercentText = percentText
+//                lastUpdateTime = time
+//            }
         } else {
-            lastPercentText = null
+//            lastPercentText = null
+//            lastUpdateTime = 0
 
             Platform.runLater {
                 when (state) {
                     is AudioDownload.State.Waiting -> {
                         downloadStateLabel.text = "Waiting for download"
-                        downloadProgressBar.isVisible = true
                         downloadProgressBar.progress = 0.0
+                        UIColors.PRIMARY.applyTo(downloadProgressBar)
                     }
                     is AudioDownload.State.Starting -> {
                         downloadStateLabel.text = "Download starting..."
-                        downloadProgressBar.isVisible = true
                         downloadProgressBar.progress = -1.0
+                        UIColors.PRIMARY.applyTo(downloadProgressBar)
                     }
                     is AudioDownload.State.Finished -> {
                         downloadStateLabel.text = "Downloaded"
-                        downloadProgressBar.isVisible = false
+                        downloadProgressBar.progress = 1.0
+                        UIColors.GREEN.applyTo(downloadProgressBar)
+                    }
+                    is AudioDownload.State.Canceled -> {
+                        downloadStateLabel.text = "Canceled"
+                        downloadProgressBar.progress = 1.0
+                        UIColors.RED.applyTo(downloadProgressBar)
                     }
                     else -> throw IllegalStateException()
                 }
