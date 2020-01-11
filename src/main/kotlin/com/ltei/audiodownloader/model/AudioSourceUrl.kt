@@ -48,6 +48,8 @@ sealed class AudioSourceUrl(val sourceName: String, val rawUrl: String, val audi
         override fun getAudioName(): String? = null
         override fun downloadTo(file: File, listener: DownloadProgressListener?) =
             downloadRawUrlTo(rawUrl, file, listener)
+
+        override fun toString(): String = "(Raw url) $rawUrl"
     }
 
     class YouTube(rawUrl: String, val videoId: String) : AudioSourceUrl("YouTube", rawUrl, "mp3") {
@@ -59,6 +61,8 @@ sealed class AudioSourceUrl(val sourceName: String, val rawUrl: String, val audi
             val streamInfo = StreamInfo.getInfo(ServiceList.YouTube, rawUrl)
             downloadFromNewPipeStreamInfo(streamInfo, file, listener)
         }
+
+        override fun toString(): String = "(YouTube) $videoId"
     }
 
     class SoundCloud(rawUrl: String) : AudioSourceUrl("SoundCloud", rawUrl, "mp3") {
@@ -67,6 +71,8 @@ sealed class AudioSourceUrl(val sourceName: String, val rawUrl: String, val audi
             val streamInfo = StreamInfo.getInfo(ServiceList.SoundCloud, rawUrl)
             downloadFromNewPipeStreamInfo(streamInfo, file, listener)
         }
+
+        override fun toString(): String = "(SoundCloud) $rawUrl"
     }
 
     companion object {

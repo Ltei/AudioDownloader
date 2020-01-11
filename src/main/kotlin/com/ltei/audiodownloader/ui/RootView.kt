@@ -2,33 +2,39 @@ package com.ltei.audiodownloader.ui
 
 import com.ltei.audiodownloader.misc.DownloaderImpl
 import com.ltei.audiodownloader.misc.debug.Logger
+import com.ltei.audiodownloader.model.AudioDownload
 import com.ltei.audiodownloader.model.AudioSourceUrl
-import com.ltei.audiodownloader.model.DownloadProgressListener
-import com.ltei.audiodownloader.model.DownloadedAudio
+import com.ltei.audiodownloader.model.Model
+import com.ltei.audiodownloader.model.Preferences
+import com.ltei.audiodownloader.service.AudioDownloadService
 import com.ltei.audiodownloader.ui.base.BaseButton
-import com.ltei.audiodownloader.ui.ovh.DownloadedAudioListView
-import javafx.application.Platform
+import com.ltei.audiodownloader.ui.ovh.AudioDownloadListView
 import javafx.event.EventHandler
-import javafx.scene.control.*
+import javafx.scene.control.Label
+import javafx.scene.control.TextField
+import javafx.scene.control.TextInputDialog
+import javafx.scene.layout.HBox
+import javafx.scene.layout.Priority
+import javafx.scene.layout.VBox
 import javafx.stage.DirectoryChooser
 import org.schabi.newpipe.extractor.NewPipe
 import tornadofx.View
+import tornadofx.hbox
 import tornadofx.label
 import tornadofx.vbox
+import java.awt.Desktop
 import java.io.File
-import kotlin.concurrent.thread
 
 class RootView : View() {
 
     private val logger = Logger(RootView::class.java)
-    private var outputDirectory = File(System.getProperty("user.home"), "Downloads")
 
-    private val downloadStateLabel = Label("Not downloading")
     private val audioSourceUrlField = TextField("https://www.youtube.com/watch?v=LwVXkM_YxMg")
     private val sourceLabel = Label("Source : YouTube")
-    private val outputDirectoryLabel = Label("Output directory : ${outputDirectory.absolutePath}")
-    private val downloadProgressBar = ProgressBar()
-    private val downloadedAudiosView = DownloadedAudioListView()
+    private val outputDirectoryLabel = Label("Output directory : ${Preferences.instance.outputDirectory.absolutePath}")
+    private val downloadedAudiosView = AudioDownloadListView()
+
+    private val audioDownloadService = AudioDownloadService(downloadedAudiosView)
 
     override val root = vbox {
         prefWidth = 500.0
@@ -36,110 +42,104 @@ class RootView : View() {
         spacing = 10.0
         padding = UIConstants.BASE_INSETS
 
-        var keepOnTop = false
-        add(BaseButton("Keep on top (Off)").apply {
-            style = UIColors.RED.toTintStyleString()
-            setOnMouseClicked {
-                keepOnTop = !keepOnTop
-                primaryStage.isAlwaysOnTop = keepOnTop
-                text = if (keepOnTop) "Keep on top (On)" else "Keep on top (Off)"
-                style = if (keepOnTop) UIColors.GREEN.toTintStyleString() else UIColors.RED.toTintStyleString()
-            }
-        })
+        // Toolbar
+        hbox {
+            add(BaseButton("Keep on top (Off)").apply {
+                style = UIColors.RED.toTintStyleString()
+                setOnMouseClicked {
+                    val keepOnTop = !Preferences.instance.keepScreenOnTop
+                    Preferences.instance.keepScreenOnTop = keepOnTop
+                    primaryStage.isAlwaysOnTop = keepOnTop
+                    text = if (keepOnTop) "Keep on top (On)" else "Keep on top (Off)"
+                    style = if (keepOnTop) UIColors.GREEN.toTintStyleString() else UIColors.RED.toTintStyleString()
+                }
+            })
+        }
 
-        label("Audio source url :")
-        add(audioSourceUrlField)
-        add(sourceLabel)
-        add(outputDirectoryLabel)
+        // Output directory
+        vbox {
+            UIStylizer.setupCardLayout(this)
+            spacing = UIConstants.BASE_SPACING
 
-        add(
-            BaseButton(
-                "Select output directory",
-                onMouseClicked = EventHandler {
-                    val chooser = DirectoryChooser()
-                    chooser.initialDirectory = outputDirectory
-                    val directory = chooser.showDialog(currentWindow)
-                    if (directory != null && directory.isDirectory) {
-                        outputDirectory = directory
-                        outputDirectoryLabel.text = "Output directory : ${outputDirectory.absolutePath}"
+            add(outputDirectoryLabel)
+
+            hbox {
+                spacing = 10.0
+
+                val selectButton = BaseButton(
+                    "Select",
+                    onMouseClicked = EventHandler {
+                        val chooser = DirectoryChooser()
+                        chooser.initialDirectory = Preferences.instance.outputDirectory
+                        val directory = chooser.showDialog(currentWindow)
+                        if (directory != null && directory.isDirectory) {
+                            Preferences.instance.outputDirectory = directory
+                            outputDirectoryLabel.text =
+                                "Output directory : ${Preferences.instance.outputDirectory.absolutePath}"
+                        }
                     }
-                })
-        )
+                )
 
+                val openButton = BaseButton(
+                    "Open",
+                    onMouseClicked = EventHandler {
+                        Desktop.getDesktop().open(Preferences.instance.outputDirectory)
+                    }
+                )
+
+                selectButton.maxWidth = Double.MAX_VALUE
+                HBox.setHgrow(selectButton, Priority.ALWAYS)
+
+                openButton.maxWidth = Double.MAX_VALUE
+                HBox.setHgrow(openButton, Priority.ALWAYS)
+
+                add(selectButton)
+                add(openButton)
+            }
+        }
+
+        // Audio Source
+        vbox {
+            UIStylizer.setupCardLayout(this)
+            spacing = UIConstants.BASE_SPACING
+
+            label("Audio source url :")
+            add(audioSourceUrlField)
+            add(sourceLabel)
+        }
 
         add(BaseButton("Download", onMouseClicked = EventHandler {
             val url = audioSourceUrlField.text
             val audioUrl = AudioSourceUrl.parse(url)
             if (audioUrl != null) {
                 val dialog = TextInputDialog(audioUrl.getAudioName() ?: "testAudio")
-                val wasAlwaysOnTop = primaryStage.isAlwaysOnTop
                 primaryStage.isAlwaysOnTop = false
                 dialog.showAndWait().ifPresent { name ->
                     if (name.isNotBlank()) {
-                        thread {
-                            val file = File(outputDirectory, "$name.${audioUrl.audioExtension}")
-                            Platform.runLater {
-                                downloadStateLabel.text = "Download starting..."
-                                downloadProgressBar.progress = -1.0
-//                                downloadProgressBar.setIsVisibleAndManaged(true)
-                            }
-                            audioUrl.downloadTo(file, object : DownloadProgressListener {
-                                private var lastPercentText: String? = null
-                                override fun onProgress(progress: Long, total: Long) {
-                                    val ratio = progress / total.toDouble()
-                                    val percentText = "%.2f".format(100.0 * ratio)
-                                    if (percentText != lastPercentText) {
-                                        val progressText = "%.2f".format(progress / 1000f)
-                                        val totalText = "%.2f".format(total / 1000f)
-                                        val text = "Download progress : $progressText/$totalText kb ($percentText%)."
-                                        Platform.runLater {
-                                            downloadStateLabel.text = text
-                                            downloadProgressBar.progress = ratio
-                                        }
-                                        logger.debug(text)
-                                        lastPercentText = percentText
-                                    }
-                                }
-                            })
-                            Platform.runLater {
-                                downloadStateLabel.text = "Not downloading"
-                                downloadProgressBar.progress = 0.0
-//                                downloadProgressBar.setIsVisibleAndManaged(false)
-                                Alert(Alert.AlertType.CONFIRMATION).apply {
-                                    title = "Success"
-                                    contentText = "Audio file downloaded to ${file.absolutePath}"
-                                }.showAndWait()
-                            }
+                        val file = File(Preferences.instance.outputDirectory, "$name.${audioUrl.audioExtension}")
+                        val audioDownload = AudioDownload(audioUrl, file)
+                        synchronized(Model.instance.audioDownloads) {
+                            Model.instance.audioDownloads.add(0, audioDownload)
                         }
+                        audioDownloadService.start()
+                        downloadedAudiosView.updateViewFromObject()
                     }
                 }
-                primaryStage.isAlwaysOnTop = wasAlwaysOnTop
+                primaryStage.isAlwaysOnTop = Preferences.instance.keepScreenOnTop
             }
         }))
 
-        add(downloadStateLabel)
-        add(downloadProgressBar.apply {
-            prefWidth = Double.MAX_VALUE
-            progress = 0.0
+        add(downloadedAudiosView.apply {
+            VBox.setVgrow(this, Priority.ALWAYS)
+            prefHeight = 400.0
         })
-
-        add(downloadedAudiosView)
-
-//        downloadProgressBar.setIsVisibleAndManaged(false)
 
         audioSourceUrlField.textProperty().addListener { _, _, newValue ->
             val audioUrl = AudioSourceUrl.parse(newValue)
             sourceLabel.text = "Source : ${audioUrl?.sourceName}"
         }
 
-        downloadedAudiosView.boundObject = listOf(
-            DownloadedAudio(AudioSourceUrl.parse("https://www.youtube.com/watch?v=LwVXkM_YxMg")!!, File("salut.Txt")),
-            DownloadedAudio(AudioSourceUrl.parse("https://www.youtube.com/watch?v=LwVXkM_YxMg")!!, File("salut.Txt")),
-            DownloadedAudio(AudioSourceUrl.parse("https://www.youtube.com/watch?v=LwVXkM_YxMg")!!, File("salut.Txt")),
-            DownloadedAudio(AudioSourceUrl.parse("https://www.youtube.com/watch?v=LwVXkM_YxMg")!!, File("salut.Txt")),
-            DownloadedAudio(AudioSourceUrl.parse("https://www.youtube.com/watch?v=LwVXkM_YxMg")!!, File("salut.Txt")),
-            DownloadedAudio(AudioSourceUrl.parse("https://www.youtube.com/watch?v=LwVXkM_YxMg")!!, File("salut.Txt"))
-        )
+        downloadedAudiosView.boundObject = Model.instance.audioDownloads
         downloadedAudiosView.updateViewFromObject()
     }
 
