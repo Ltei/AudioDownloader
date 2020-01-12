@@ -2,6 +2,7 @@ package com.ltei.audiodownloader.model
 
 import com.google.gson.GsonBuilder
 import com.ltei.audiodownloader.misc.util.fromJson
+import com.ltei.audiodownloader.model.audiosource.AudioSourceUrl
 import com.ltei.audiodownloader.model.serializer.AudioDownloadStateAdapter
 import com.ltei.audiodownloader.model.serializer.AudioSourceUrlAdapter
 import com.ltei.audiodownloader.model.serializer.FileAdapter
@@ -24,19 +25,19 @@ class Model private constructor(
         private var mInstance: Model? = null
         val instance: Model
             get() {
-                var instance = mInstance
-
-                if (instance == null) {
-                    instance = try {
-                        gson.fromJson<Model>(file.readText())
+                if (mInstance == null && file.exists()) {
+                    try {
+                        mInstance = gson.fromJson<Model>(file.readText())
                     } catch (e: Exception) {
                         e.printStackTrace()
-                        Model()
                     }
-                    mInstance = instance
                 }
 
-                return instance
+                if (mInstance == null) {
+                    mInstance = Model()
+                }
+
+                return mInstance!!
             }
 
         fun save() {

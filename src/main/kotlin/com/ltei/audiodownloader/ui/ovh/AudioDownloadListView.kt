@@ -9,6 +9,7 @@ import javafx.scene.control.ListView
 import javafx.scene.control.MenuItem
 import javafx.util.Callback
 import tornadofx.asObservable
+import java.awt.Desktop
 import java.util.*
 
 class AudioDownloadListView(
@@ -21,6 +22,8 @@ class AudioDownloadListView(
     private val cells = Collections.newSetFromMap(WeakHashMap<AudioDownloadItemView, Boolean>())
 
     init {
+        val model = Model.instance
+
         cellFactory = Callback {
             val view = AudioDownloadItemView()
             view.setOnContextMenuRequested { event ->
@@ -29,19 +32,34 @@ class AudioDownloadListView(
                     val state = obj.state
                     val items = mutableListOf<MenuItem>()
 
-                    if (state is AudioDownload.State.Finished || state is AudioDownload.State.Canceled) {
-                        items.add(MenuItem("Delete").apply {
-                            onAction = EventHandler {
+                    items.add(MenuItem("Delete").apply {
+                        onAction = EventHandler {
+                            synchronized(model.audioDownloads) {
                                 Model.instance.audioDownloads.remove(obj)
-                                this@AudioDownloadListView.items = Model.instance.audioDownloads.asObservable()
+                                if (obj === AudioDownloadService.currentDownload) {
+                                    AudioDownloadService.restart()
+                                }
                             }
-                        })
+                            this@AudioDownloadListView.items = Model.instance.audioDownloads.asObservable()
+                        }
+                    })
 
+                    if (state is AudioDownload.State.Finished || state is AudioDownload.State.Canceled) {
                         items.add(MenuItem("Retry").apply {
                             onAction = EventHandler {
-                                Model.instance.audioDownloads.add(0, obj.copy(state = AudioDownload.State.Waiting))
+                                synchronized(model.audioDownloads) {
+                                    Model.instance.audioDownloads.add(0, obj.copy(state = AudioDownload.State.Waiting))
+                                }
                                 this@AudioDownloadListView.items = Model.instance.audioDownloads.asObservable()
                                 AudioDownloadService.start()
+                            }
+                        })
+                    }
+
+                    if (state is AudioDownload.State.Finished && obj.outputFile.exists()) {
+                        items.add(MenuItem("Play audio").apply {
+                            onAction = EventHandler {
+                                Desktop.getDesktop().open(obj.outputFile)
                             }
                         })
                     }

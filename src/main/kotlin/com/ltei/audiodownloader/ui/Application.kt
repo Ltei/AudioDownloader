@@ -5,16 +5,21 @@ import com.ltei.audiodownloader.model.Preferences
 import com.ltei.audiodownloader.service.AudioDownloadService
 import javafx.stage.Stage
 import tornadofx.App
+import java.util.*
 
 class Application : App() {
 
     override val primaryView = RootView::class
+
+    private var mTimer: Timer? = null
 
     init {
         instance = this
     }
 
     override fun start(stage: Stage) {
+        mTimer = Timer()
+
         super.start(stage)
         stage.titleProperty().unbind()
         stage.titleProperty().value = "AudioDownloader"
@@ -27,6 +32,7 @@ class Application : App() {
         AudioDownloadService.stop()
         Model.save()
         Preferences.save()
+        mTimer?.cancel()
     }
 
     private class ShutdownHook : Thread() {
@@ -34,11 +40,14 @@ class Application : App() {
             AudioDownloadService.stop()
             Model.save()
             Preferences.save()
+            instance.mTimer?.cancel()
         }
     }
 
     companion object {
         lateinit var instance: Application
             private set
+
+        val timer get() = instance.mTimer!!
     }
 }

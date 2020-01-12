@@ -3,10 +3,10 @@ package com.ltei.audiodownloader.misc
 import java.util.*
 
 class ContinuousTask(
-    val cooldown: Long,
-    val block: () -> Unit
+    private val timer: Timer,
+    private val cooldown: Long,
+    private val block: () -> Unit
 ) {
-    private val timer = Timer()
     private var lastRunTime: Long = 0
 
     fun requestRun() {
@@ -21,10 +21,6 @@ class ContinuousTask(
 
     fun notifyTaskRun() {
         lastRunTime = System.currentTimeMillis()
-    }
-
-    fun dispose() {
-        timer.cancel()
     }
 
     private inner class TaskImpl : TimerTask() {

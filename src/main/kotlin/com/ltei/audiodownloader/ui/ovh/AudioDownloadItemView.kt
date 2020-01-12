@@ -49,8 +49,8 @@ class AudioDownloadItemView(override var boundObject: AudioDownload? = null) : V
             Platform.runLater {
                 downloadStateLabel.text = text
                 downloadProgressBar.progress = ratio
-                UIColors.TEXT_LIGHT.applyTo(downloadStateLabel)
-                UIColors.PRIMARY.applyTo(downloadProgressBar)
+                UIColors.TEXT_DARK.applyTo(downloadStateLabel)
+                UIColors.PRIMARY_LIGHT.applyTo(downloadProgressBar)
             }
         } else {
             Platform.runLater {
@@ -58,14 +58,14 @@ class AudioDownloadItemView(override var boundObject: AudioDownload? = null) : V
                     is AudioDownload.State.Waiting -> {
                         downloadStateLabel.text = "Waiting for download"
                         downloadProgressBar.progress = 0.0
-                        UIColors.TEXT_LIGHT.applyTo(downloadStateLabel)
-                        UIColors.PRIMARY.applyTo(downloadProgressBar)
+                        UIColors.TEXT_DARK.applyTo(downloadStateLabel)
+                        UIColors.PRIMARY_LIGHT.applyTo(downloadProgressBar)
                     }
                     is AudioDownload.State.Starting -> {
                         downloadStateLabel.text = "Download starting..."
                         downloadProgressBar.progress = -1.0
-                        UIColors.TEXT_LIGHT.applyTo(downloadStateLabel)
-                        UIColors.PRIMARY.applyTo(downloadProgressBar)
+                        UIColors.TEXT_DARK.applyTo(downloadStateLabel)
+                        UIColors.PRIMARY_LIGHT.applyTo(downloadProgressBar)
                     }
                     is AudioDownload.State.Finished -> {
                         downloadStateLabel.text = "Downloaded"

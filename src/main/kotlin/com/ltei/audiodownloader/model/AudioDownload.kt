@@ -1,5 +1,6 @@
 package com.ltei.audiodownloader.model
 
+import com.ltei.audiodownloader.model.audiosource.AudioSourceUrl
 import java.io.File
 
 data class AudioDownload(

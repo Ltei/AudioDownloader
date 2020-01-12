@@ -4,9 +4,9 @@ import com.ltei.audiodownloader.misc.ContinuousTask
 import com.ltei.audiodownloader.misc.DownloaderImpl
 import com.ltei.audiodownloader.misc.debug.Logger
 import com.ltei.audiodownloader.model.AudioDownload
-import com.ltei.audiodownloader.model.AudioSourceUrl
 import com.ltei.audiodownloader.model.Model
 import com.ltei.audiodownloader.model.Preferences
+import com.ltei.audiodownloader.model.audiosource.AudioSourceUrl
 import com.ltei.audiodownloader.service.AudioDownloadService
 import com.ltei.audiodownloader.ui.base.BaseButton
 import com.ltei.audiodownloader.ui.base.BaseLabel
@@ -26,7 +26,7 @@ import tornadofx.vbox
 import java.awt.Desktop
 import java.io.File
 
-class RootView : View() {
+class RootView : View(), AudioDownloadService.Listener {
 
     private val logger = Logger(RootView::class.java)
 
@@ -117,7 +117,7 @@ class RootView : View() {
             val url = audioSourceUrlField.text
             val audioUrl = AudioSourceUrl.parse(url)
             if (audioUrl != null) {
-                val info = audioUrl.getInfo()
+                val info = audioUrl.info.value
                 var title = info.title ?: "Unknown title"
                 info.artist?.let { artist -> title = "$artist - $title" }
 
@@ -125,7 +125,7 @@ class RootView : View() {
                 primaryStage.isAlwaysOnTop = false
                 dialog.showAndWait().ifPresent { name ->
                     if (name.isNotBlank()) {
-                        val file = File(Preferences.instance.outputDirectory, "$name.${audioUrl.audioExtension}")
+                        val file = File(Preferences.instance.outputDirectory, "$name.${info.format}")
                         val audioDownload = AudioDownload(audioUrl, file)
                         synchronized(Model.instance.audioDownloads) {
                             Model.instance.audioDownloads.add(0, audioDownload)
@@ -145,6 +145,13 @@ class RootView : View() {
         })
     }
 
+    private var currentDownload: AudioDownload? = null
+    private var audioDownloadListUpdateTask = ContinuousTask(Application.timer, 100L) {
+        currentDownload?.let {
+            audioDownloadListView.findCell(it)?.updateViewOnStateChanged()
+        }
+    }
+
     init {
         instance = this
         NewPipe.init(DownloaderImpl)
@@ -154,31 +161,32 @@ class RootView : View() {
             sourceLabel.text = "Source : ${audioUrl?.sourceName}"
         }
 
+        AudioDownloadService.listeners.add(this)
+
         audioDownloadListView.boundObject = Model.instance.audioDownloads
         audioDownloadListView.updateViewFromObject()
+    }
 
-        var currentDownload: AudioDownload? = null
+    override fun onDelete() {
+        super.onDelete()
+        AudioDownloadService.listeners.remove(this)
+    }
 
-        val audioDownloadListUpdateTask = ContinuousTask(100L) {
-            currentDownload?.let {
-                audioDownloadListView.findCell(it)?.updateViewOnStateChanged()
+    // AudioDownloadService.Listener
+
+    override fun onDownloadUpdate(download: AudioDownload?) {
+        currentDownload = download
+        if (download != null) {
+            if (download.state is AudioDownload.State.InProgress) {
+                audioDownloadListUpdateTask.requestRun()
+            } else {
+                audioDownloadListView.findCell(download)?.updateViewOnStateChanged()
+                audioDownloadListUpdateTask.notifyTaskRun()
             }
         }
-
-        AudioDownloadService.listeners.add(object : AudioDownloadService.Listener {
-            override fun onDownloadUpdate(download: AudioDownload?) {
-                currentDownload = download
-                if (download != null) {
-                    if (download.state is AudioDownload.State.InProgress) {
-                        audioDownloadListUpdateTask.requestRun()
-                    } else {
-                        audioDownloadListView.findCell(download)?.updateViewOnStateChanged()
-                        audioDownloadListUpdateTask.notifyTaskRun()
-                    }
-                }
-            }
-        })
     }
+
+    // Static
 
     companion object {
         lateinit var instance: RootView
