@@ -1,7 +1,12 @@
 package com.ltei.audiodownloader.ui.ovh
 
 import com.ltei.audiodownloader.model.AudioDownload
+import com.ltei.audiodownloader.model.Model
+import com.ltei.audiodownloader.service.AudioDownloadService
+import javafx.event.EventHandler
+import javafx.scene.control.ContextMenu
 import javafx.scene.control.ListView
+import javafx.scene.control.MenuItem
 import javafx.util.Callback
 import tornadofx.asObservable
 import java.util.*
@@ -18,6 +23,36 @@ class AudioDownloadListView(
     init {
         cellFactory = Callback {
             val view = AudioDownloadItemView()
+            view.setOnContextMenuRequested { event ->
+                val obj = view.boundObject
+                if (obj != null) {
+                    val state = obj.state
+                    val items = mutableListOf<MenuItem>()
+
+                    if (state is AudioDownload.State.Finished || state is AudioDownload.State.Canceled) {
+                        items.add(MenuItem("Delete").apply {
+                            onAction = EventHandler {
+                                Model.instance.audioDownloads.remove(obj)
+                                this@AudioDownloadListView.items = Model.instance.audioDownloads.asObservable()
+                            }
+                        })
+
+                        items.add(MenuItem("Retry").apply {
+                            onAction = EventHandler {
+                                Model.instance.audioDownloads.add(0, obj.copy(state = AudioDownload.State.Waiting))
+                                this@AudioDownloadListView.items = Model.instance.audioDownloads.asObservable()
+                                AudioDownloadService.start()
+                            }
+                        })
+                    }
+
+                    if (items.isNotEmpty()) {
+                        val menu = ContextMenu()
+                        menu.items.addAll(items)
+                        menu.show(view, event.screenX, event.screenY)
+                    }
+                }
+            }
             view.prefWidth = 0.0
             cells.add(view)
             view.toListCell()

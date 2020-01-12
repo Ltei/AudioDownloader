@@ -7,7 +7,7 @@ import com.ltei.audiodownloader.model.AudioSourceUrl
 import com.ltei.audiodownloader.model.Model
 import com.ltei.audiodownloader.model.Preferences
 import com.ltei.audiodownloader.service.AudioDownloadService
-import com.ltei.audiodownloader.service.ContinuousUpdaterService
+import com.ltei.audiodownloader.service.ContinuousUpdateService
 import com.ltei.audiodownloader.ui.base.BaseButton
 import com.ltei.audiodownloader.ui.base.BaseLabel
 import com.ltei.audiodownloader.ui.ovh.AudioDownloadListView
@@ -25,6 +25,7 @@ import tornadofx.hbox
 import tornadofx.vbox
 import java.awt.Desktop
 import java.io.File
+import java.util.concurrent.atomic.AtomicBoolean
 
 class RootView : View() {
 
@@ -54,7 +55,7 @@ class RootView : View() {
                     Preferences.instance.keepScreenOnTop = keepOnTop
                     primaryStage.isAlwaysOnTop = keepOnTop
                     text = if (keepOnTop) "Keep on top (On)" else "Keep on top (Off)"
-                    style = if (keepOnTop) UIColors.GREEN.toTextColorCssStyle() else UIColors.RED.toTextColorCssStyle()
+                    style = (if (keepOnTop) UIColors.GREEN else UIColors.RED).toTextColorCssStyle()
                 }
             }.apply {
                 prefWidth = 9999.0
@@ -117,7 +118,11 @@ class RootView : View() {
             val url = audioSourceUrlField.text
             val audioUrl = AudioSourceUrl.parse(url)
             if (audioUrl != null) {
-                val dialog = TextInputDialog(audioUrl.getAudioName() ?: "testAudio")
+                val info = audioUrl.getInfo()
+                var title = info.title ?: "Unknown title"
+                info.artist?.let { artist -> title = "$artist - $title" }
+
+                val dialog = TextInputDialog(title)
                 primaryStage.isAlwaysOnTop = false
                 dialog.showAndWait().ifPresent { name ->
                     if (name.isNotBlank()) {
@@ -126,7 +131,7 @@ class RootView : View() {
                         synchronized(Model.instance.audioDownloads) {
                             Model.instance.audioDownloads.add(0, audioDownload)
                         }
-                        Application.audioDownloadService.start()
+                        AudioDownloadService.start()
                         audioDownloadListView.updateViewFromObject()
                     }
                 }
@@ -154,15 +159,27 @@ class RootView : View() {
         audioDownloadListView.updateViewFromObject()
 
         var currentDownload: AudioDownload? = null
+        val shouldUpdateDownloadView = AtomicBoolean(false)
 
-        Application.audioDownloadService.listeners.add(object : AudioDownloadService.Listener {
+        AudioDownloadService.listeners.add(object : AudioDownloadService.Listener {
             override fun onDownloadUpdate(download: AudioDownload?) {
                 currentDownload = download
+                if (download != null) {
+                    if (download.state is AudioDownload.State.InProgress) {
+                        shouldUpdateDownloadView.set(true)
+                    } else {
+                        audioDownloadListView.findCell(download)?.updateViewOnStateChanged()
+                    }
+                }
             }
         })
 
-        ContinuousUpdaterService.blocks.add {
-            currentDownload?.let { audioDownloadListView.findCell(it)?.updateViewOnStateChanged() }
+        ContinuousUpdateService.blocks.add {
+            currentDownload?.let {
+                if (shouldUpdateDownloadView.getAndSet(false)) {
+                    audioDownloadListView.findCell(it)?.updateViewOnStateChanged()
+                }
+            }
         }
     }
 

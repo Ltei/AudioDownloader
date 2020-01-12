@@ -1,6 +1,7 @@
 package com.ltei.audiodownloader.model
 
 import com.ltei.audiodownloader.misc.util.transferTo
+import com.ltei.audiodownloader.web.SoundCloudScrapper
 import org.schabi.newpipe.extractor.ServiceList
 import org.schabi.newpipe.extractor.stream.StreamInfo
 import java.io.File
@@ -8,8 +9,7 @@ import java.net.URL
 
 sealed class AudioSourceUrl(val sourceName: String, val rawUrl: String, val audioExtension: String) {
 
-    abstract fun getAudioName(): String?
-
+    abstract fun getInfo(): Info
     abstract fun downloadTo(file: File, interceptor: DownloadProgressInterceptor? = null)
 
     protected fun downloadFromNewPipeStreamInfo(
@@ -45,7 +45,7 @@ sealed class AudioSourceUrl(val sourceName: String, val rawUrl: String, val audi
     }
 
     class Raw(rawUrl: String, audioExtension: String) : AudioSourceUrl("Raw", rawUrl, audioExtension) {
-        override fun getAudioName(): String? = null
+        override fun getInfo() = Info()
         override fun downloadTo(file: File, interceptor: DownloadProgressInterceptor?) =
             downloadRawUrlTo(rawUrl, file, interceptor)
 
@@ -53,9 +53,10 @@ sealed class AudioSourceUrl(val sourceName: String, val rawUrl: String, val audi
     }
 
     class YouTube(rawUrl: String, val videoId: String) : AudioSourceUrl("YouTube", rawUrl, "mp3") {
-        override fun getAudioName(): String? = getVideoSnippet()?.snippet?.title
-
-        fun getVideoSnippet(): com.google.api.services.youtube.model.Video? = null
+        override fun getInfo(): Info {
+            val snippet = getVideoSnippet()?.snippet
+            return Info(title = snippet?.title)
+        }
 
         override fun downloadTo(file: File, interceptor: DownloadProgressInterceptor?) {
             val streamInfo = StreamInfo.getInfo(ServiceList.YouTube, rawUrl)
@@ -63,10 +64,16 @@ sealed class AudioSourceUrl(val sourceName: String, val rawUrl: String, val audi
         }
 
         override fun toString(): String = "(YouTube) $videoId"
+
+        fun getVideoSnippet(): com.google.api.services.youtube.model.Video? = null
     }
 
     class SoundCloud(rawUrl: String) : AudioSourceUrl("SoundCloud", rawUrl, "mp3") {
-        override fun getAudioName(): String? = null
+        override fun getInfo(): Info {
+            val snippet = SoundCloudScrapper.getAudioInfo(rawUrl)
+            return Info(title = snippet?.title, artist = snippet?.artist)
+        }
+
         override fun downloadTo(file: File, interceptor: DownloadProgressInterceptor?) {
             val streamInfo = StreamInfo.getInfo(ServiceList.SoundCloud, rawUrl)
             downloadFromNewPipeStreamInfo(streamInfo, file, interceptor)
@@ -74,6 +81,11 @@ sealed class AudioSourceUrl(val sourceName: String, val rawUrl: String, val audi
 
         override fun toString(): String = "(SoundCloud) $rawUrl"
     }
+
+    class Info(
+        val title: String? = null,
+        val artist: String? = null
+    )
 
     companion object {
         fun parse(rawUrl: String): AudioSourceUrl? {

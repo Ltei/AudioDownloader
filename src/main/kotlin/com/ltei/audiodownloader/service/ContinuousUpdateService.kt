@@ -2,10 +2,10 @@ package com.ltei.audiodownloader.service
 
 import com.ltei.audiodownloader.misc.debug.Logger
 
-object ContinuousUpdaterService {
+object ContinuousUpdateService {
 
     private val logger = Logger(AudioDownloadService::class.java)
-    private val loopCooldown: Long = 100
+    private val loopCooldown: Long = 100L
     private var thread: RunnerThread? = null
 
     val blocks = mutableListOf<() -> Unit>()
@@ -29,7 +29,7 @@ object ContinuousUpdaterService {
         override fun run() {
             var lastTime = System.currentTimeMillis()
             while (!isKilled) {
-                blocks.forEach { it() }
+                for (block in blocks) block.invoke()
                 val currentTime = System.currentTimeMillis()
                 val sleepTime = lastTime - currentTime + loopCooldown
                 if (sleepTime > 0) sleep(sleepTime)

@@ -40,7 +40,7 @@ class AudioDownloadItemView(override var boundObject: AudioDownload? = null) : V
         if (state is AudioDownload.State.InProgress) {
             val ratio = state.progress / state.total.toDouble()
             val percentText = "%.2f".format(100.0 * ratio)
-            val time = System.currentTimeMillis()
+//            val time = System.currentTimeMillis()
 //            if (percentText != lastPercentText && time - lastUpdateTime > 100) {
                 val progressText = "%.2f".format(state.progress / 1000f)
                 val totalText = "%.2f".format(state.total / 1000f)

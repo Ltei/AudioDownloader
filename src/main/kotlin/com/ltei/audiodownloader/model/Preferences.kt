@@ -2,6 +2,9 @@ package com.ltei.audiodownloader.model
 
 import com.google.gson.GsonBuilder
 import com.ltei.audiodownloader.misc.util.fromJson
+import com.ltei.audiodownloader.model.serializer.AudioDownloadStateAdapter
+import com.ltei.audiodownloader.model.serializer.AudioSourceUrlAdapter
+import com.ltei.audiodownloader.model.serializer.FileAdapter
 import com.ltei.audiodownloader.service.FileService
 import java.io.File
 
@@ -13,6 +16,9 @@ class Preferences private constructor(
     companion object {
         private val file = FileService.getOutputFile("preferences.json")
         private val gson = GsonBuilder()
+            .registerTypeAdapter(File::class.java, FileAdapter())
+            .registerTypeAdapter(AudioDownload.State::class.java, AudioDownloadStateAdapter())
+            .registerTypeAdapter(AudioSourceUrl::class.java, AudioSourceUrlAdapter())
             .setPrettyPrinting()
             .create()
 
@@ -25,6 +31,7 @@ class Preferences private constructor(
                     instance = try {
                         gson.fromJson<Preferences>(file.readText())
                     } catch (e: Exception) {
+                        e.printStackTrace()
                         Preferences()
                     }
                     mInstance = instance

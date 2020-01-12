@@ -4,19 +4,18 @@ import com.google.gson.GsonBuilder
 import com.ltei.audiodownloader.misc.util.fromJson
 import com.ltei.audiodownloader.model.serializer.AudioDownloadStateAdapter
 import com.ltei.audiodownloader.model.serializer.AudioSourceUrlAdapter
+import com.ltei.audiodownloader.model.serializer.FileAdapter
 import com.ltei.audiodownloader.service.FileService
+import java.io.File
 
 class Model private constructor(
-    val audioDownloads: MutableList<AudioDownload> = mutableListOf(
-        /*AudioDownload(false, AudioSourceUrl.parse("https://www.youtube.com/watch?v=LwVXkM_YxMg")!!, FileService.createTempFile()),
-        AudioDownload(true, AudioSourceUrl.parse("https://www.youtube.com/watch?v=LwVXkM_YxMg")!!, FileService.createTempFile()),
-        AudioDownload(true, AudioSourceUrl.parse("https://www.youtube.com/watch?v=LwVXkM_YxMg")!!, FileService.createTempFile())*/
-    )
+    val audioDownloads: MutableList<AudioDownload> = mutableListOf()
 ) {
 
     companion object {
         private val file = FileService.getOutputFile("model.json")
         private val gson = GsonBuilder()
+            .registerTypeAdapter(File::class.java, FileAdapter())
             .registerTypeAdapter(AudioDownload.State::class.java, AudioDownloadStateAdapter())
             .registerTypeAdapter(AudioSourceUrl::class.java, AudioSourceUrlAdapter())
             .setPrettyPrinting()
@@ -31,6 +30,7 @@ class Model private constructor(
                     instance = try {
                         gson.fromJson<Model>(file.readText())
                     } catch (e: Exception) {
+                        e.printStackTrace()
                         Model()
                     }
                     mInstance = instance

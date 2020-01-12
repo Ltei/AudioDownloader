@@ -5,7 +5,7 @@ import com.ltei.audiodownloader.model.AudioDownload
 import com.ltei.audiodownloader.model.DownloadProgressInterceptor
 import com.ltei.audiodownloader.model.Model
 
-class AudioDownloadService {
+object AudioDownloadService {
 
     private val logger = Logger(AudioDownloadService::class.java)
     private var thread: RunnerThread? = null
@@ -24,7 +24,7 @@ class AudioDownloadService {
         thread = null
     }
 
-    private inner class RunnerThread : Thread() {
+    private class RunnerThread : Thread() {
         var isKilled = false
             private set
 
