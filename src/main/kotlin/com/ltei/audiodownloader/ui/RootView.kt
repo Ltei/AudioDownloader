@@ -1,5 +1,6 @@
 package com.ltei.audiodownloader.ui
 
+import com.ltei.audiodownloader.misc.ContinuousTask
 import com.ltei.audiodownloader.misc.DownloaderImpl
 import com.ltei.audiodownloader.misc.debug.Logger
 import com.ltei.audiodownloader.model.AudioDownload
@@ -7,7 +8,6 @@ import com.ltei.audiodownloader.model.AudioSourceUrl
 import com.ltei.audiodownloader.model.Model
 import com.ltei.audiodownloader.model.Preferences
 import com.ltei.audiodownloader.service.AudioDownloadService
-import com.ltei.audiodownloader.service.ContinuousUpdateService
 import com.ltei.audiodownloader.ui.base.BaseButton
 import com.ltei.audiodownloader.ui.base.BaseLabel
 import com.ltei.audiodownloader.ui.ovh.AudioDownloadListView
@@ -25,7 +25,6 @@ import tornadofx.hbox
 import tornadofx.vbox
 import java.awt.Desktop
 import java.io.File
-import java.util.concurrent.atomic.AtomicBoolean
 
 class RootView : View() {
 
@@ -49,13 +48,13 @@ class RootView : View() {
             prefWidth = Double.MAX_VALUE
 
             add(BaseButton("Keep on top (Off)").apply {
-                style = UIColors.RED.toTextColorCssStyle()
+                UIColors.RED.applyTo(this)
                 setOnMouseClicked {
                     val keepOnTop = !Preferences.instance.keepScreenOnTop
                     Preferences.instance.keepScreenOnTop = keepOnTop
                     primaryStage.isAlwaysOnTop = keepOnTop
                     text = if (keepOnTop) "Keep on top (On)" else "Keep on top (Off)"
-                    style = (if (keepOnTop) UIColors.GREEN else UIColors.RED).toTextColorCssStyle()
+                    (if (keepOnTop) UIColors.GREEN else UIColors.RED).applyTo(this)
                 }
             }.apply {
                 prefWidth = 9999.0
@@ -159,28 +158,26 @@ class RootView : View() {
         audioDownloadListView.updateViewFromObject()
 
         var currentDownload: AudioDownload? = null
-        val shouldUpdateDownloadView = AtomicBoolean(false)
+
+        val audioDownloadListUpdateTask = ContinuousTask(100L) {
+            currentDownload?.let {
+                audioDownloadListView.findCell(it)?.updateViewOnStateChanged()
+            }
+        }
 
         AudioDownloadService.listeners.add(object : AudioDownloadService.Listener {
             override fun onDownloadUpdate(download: AudioDownload?) {
                 currentDownload = download
                 if (download != null) {
                     if (download.state is AudioDownload.State.InProgress) {
-                        shouldUpdateDownloadView.set(true)
+                        audioDownloadListUpdateTask.requestRun()
                     } else {
                         audioDownloadListView.findCell(download)?.updateViewOnStateChanged()
+                        audioDownloadListUpdateTask.notifyTaskRun()
                     }
                 }
             }
         })
-
-        ContinuousUpdateService.blocks.add {
-            currentDownload?.let {
-                if (shouldUpdateDownloadView.getAndSet(false)) {
-                    audioDownloadListView.findCell(it)?.updateViewOnStateChanged()
-                }
-            }
-        }
     }
 
     companion object {

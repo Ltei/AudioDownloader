@@ -1,7 +1,7 @@
 package com.ltei.audiodownloader.ui.base
 
 import com.ltei.audiodownloader.ui.UIColors
-import com.ltei.audiodownloader.ui.toTextColorCssStyle
+import com.ltei.audiodownloader.ui.applyTo
 import javafx.event.EventHandler
 import javafx.scene.control.Button
 import javafx.scene.input.MouseEvent
@@ -12,7 +12,7 @@ open class BaseButton(
 ) : Button(text) {
     init {
         maxWidth = Double.MAX_VALUE
-        style = UIColors.DEFAULT_BUTTON.toTextColorCssStyle()
+        UIColors.DEFAULT_BUTTON.applyTo(this)
         if (onMouseClicked != null)
             this.onMouseClicked = onMouseClicked
     }

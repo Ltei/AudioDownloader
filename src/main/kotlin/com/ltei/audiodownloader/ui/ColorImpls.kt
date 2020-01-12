@@ -1,6 +1,8 @@
 package com.ltei.audiodownloader.ui
 
 import javafx.geometry.Insets
+import javafx.scene.control.Button
+import javafx.scene.control.Label
 import javafx.scene.control.ProgressBar
 import javafx.scene.layout.BackgroundFill
 import javafx.scene.layout.CornerRadii
@@ -58,19 +60,17 @@ fun Color.toHexString() = String.format(
     (blue * 255).roundToInt()
 )
 
-fun Color.toTextColorCssStyle(): String {
+fun Color.applyTo(button: Button) {
     val rgb = "rgb(${(red * 255).roundToInt()}, ${(green * 255).roundToInt()}, ${(blue * 255).roundToInt()})"
-    return "-fx-base: $rgb;\n" +
+    button.style = "-fx-base: $rgb;\n" +
             "-fx-background: $rgb;"
+}
+
+fun Color.applyTo(label: Label) {
+    label.textFill = this
 }
 
 fun Color.applyTo(progressBar: ProgressBar) {
     val rgb = "rgb(${(red * 255).roundToInt()}, ${(green * 255).roundToInt()}, ${(blue * 255).roundToInt()})"
     progressBar.lookup(".bar").style = "-fx-background-color: -fx-box-border, $rgb"
-}
-
-fun Color.toProgressBarColorCssStyle(): String {
-    val rgb = "rgb(${(red * 255).roundToInt()}, ${(green * 255).roundToInt()}, ${(blue * 255).roundToInt()})"
-    return "-fx-background-color: $rgb;\n" +
-            "-fx-background: $rgb;"
 }

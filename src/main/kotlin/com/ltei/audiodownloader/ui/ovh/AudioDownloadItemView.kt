@@ -7,6 +7,7 @@ import javafx.application.Platform
 import javafx.scene.control.ProgressBar
 import javafx.scene.layout.VBox
 import tornadofx.add
+import tornadofx.stackpane
 
 class AudioDownloadItemView(override var boundObject: AudioDownload? = null) : VBox(), ObjectViewHolder<AudioDownload> {
     private val sourceLabel = BaseLabel()
@@ -18,16 +19,18 @@ class AudioDownloadItemView(override var boundObject: AudioDownload? = null) : V
 
     init {
         UIStylizer.setupCardLayout(this)
-        spacing = UIConstants.BASE_SPACING
+        spacing = UIConstants.BASE_SPACING / 5.0
 
         add(sourceLabel)
         add(fileLabel)
 
-        add(downloadStateLabel)
-        add(downloadProgressBar.apply {
-            prefWidth = Double.MAX_VALUE
-            progress = 0.0
-        })
+        stackpane {
+            add(downloadProgressBar.apply {
+                prefWidth = Double.MAX_VALUE
+                progress = 0.0
+            })
+            add(downloadStateLabel)
+        }
 
         updateViewFromObject()
     }
@@ -40,43 +43,40 @@ class AudioDownloadItemView(override var boundObject: AudioDownload? = null) : V
         if (state is AudioDownload.State.InProgress) {
             val ratio = state.progress / state.total.toDouble()
             val percentText = "%.2f".format(100.0 * ratio)
-//            val time = System.currentTimeMillis()
-//            if (percentText != lastPercentText && time - lastUpdateTime > 100) {
-                val progressText = "%.2f".format(state.progress / 1000f)
-                val totalText = "%.2f".format(state.total / 1000f)
-                val text = "Download progress : $progressText/$totalText kb ($percentText%)."
-                Platform.runLater {
-                    downloadStateLabel.text = text
-                    downloadProgressBar.progress = ratio
-                    UIColors.PRIMARY.applyTo(downloadProgressBar)
-                }
-//                lastPercentText = percentText
-//                lastUpdateTime = time
-//            }
+            val progressText = "%.2f".format(state.progress / 1000f)
+            val totalText = "%.2f".format(state.total / 1000f)
+            val text = "Download progress : $progressText/$totalText kb ($percentText%)."
+            Platform.runLater {
+                downloadStateLabel.text = text
+                downloadProgressBar.progress = ratio
+                UIColors.TEXT_LIGHT.applyTo(downloadStateLabel)
+                UIColors.PRIMARY.applyTo(downloadProgressBar)
+            }
         } else {
-//            lastPercentText = null
-//            lastUpdateTime = 0
-
             Platform.runLater {
                 when (state) {
                     is AudioDownload.State.Waiting -> {
                         downloadStateLabel.text = "Waiting for download"
                         downloadProgressBar.progress = 0.0
+                        UIColors.TEXT_LIGHT.applyTo(downloadStateLabel)
                         UIColors.PRIMARY.applyTo(downloadProgressBar)
                     }
                     is AudioDownload.State.Starting -> {
                         downloadStateLabel.text = "Download starting..."
                         downloadProgressBar.progress = -1.0
+                        UIColors.TEXT_LIGHT.applyTo(downloadStateLabel)
                         UIColors.PRIMARY.applyTo(downloadProgressBar)
                     }
                     is AudioDownload.State.Finished -> {
                         downloadStateLabel.text = "Downloaded"
                         downloadProgressBar.progress = 1.0
+                        UIColors.TEXT_DARK.applyTo(downloadStateLabel)
                         UIColors.GREEN.applyTo(downloadProgressBar)
                     }
                     is AudioDownload.State.Canceled -> {
                         downloadStateLabel.text = "Canceled"
                         downloadProgressBar.progress = 1.0
+                        UIColors.TEXT_DARK.applyTo(downloadStateLabel)
                         UIColors.RED.applyTo(downloadProgressBar)
                     }
                     else -> throw IllegalStateException()

@@ -11,6 +11,9 @@ object UIColors {
     val PRIMARY = colorOf("27313D")
     val PRIMARY_LIGHT = colorOf("3E4D60")
 
+    val TEXT_LIGHT = WHITE
+    val TEXT_DARK = BACKGROUND
+
     val DEFAULT_BUTTON = PRIMARY_LIGHT
     val DEFAULT_TEXT = WHITE
 }
