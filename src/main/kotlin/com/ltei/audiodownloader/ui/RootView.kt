@@ -10,10 +10,14 @@ import com.ltei.audiodownloader.model.audiosource.AudioSourceUrl
 import com.ltei.audiodownloader.service.AudioDownloadService
 import com.ltei.audiodownloader.ui.base.BaseButton
 import com.ltei.audiodownloader.ui.base.BaseLabel
+import com.ltei.audiodownloader.ui.misc.CreateDownloadDialog
+import com.ltei.audiodownloader.ui.misc.applyTo
 import com.ltei.audiodownloader.ui.ovh.AudioDownloadListView
+import com.ltei.audiodownloader.ui.res.UIColors
+import com.ltei.audiodownloader.ui.res.UIConstants
+import com.ltei.audiodownloader.ui.res.UIStylizer
 import javafx.event.EventHandler
 import javafx.scene.control.TextField
-import javafx.scene.control.TextInputDialog
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
@@ -121,11 +125,11 @@ class RootView : View(), AudioDownloadService.Listener {
                 var title = info.title ?: "Unknown title"
                 info.artist?.let { artist -> title = "$artist - $title" }
 
-                val dialog = TextInputDialog(title)
+                val dialog = CreateDownloadDialog(title)
                 primaryStage.isAlwaysOnTop = false
-                dialog.showAndWait().ifPresent { name ->
-                    if (name.isNotBlank()) {
-                        val file = File(Preferences.instance.outputDirectory, "$name.${info.format}")
+                dialog.showAndWait().ifPresent { result ->
+                    if (result.fileName.isNotBlank()) {
+                        val file = File(Preferences.instance.outputDirectory, "${result.fileName}.${info.format}")
                         val audioDownload = AudioDownload(audioUrl, file)
                         synchronized(Model.instance.audioDownloads) {
                             Model.instance.audioDownloads.add(0, audioDownload)

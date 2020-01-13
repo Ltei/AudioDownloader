@@ -63,7 +63,7 @@ dependencies {
 
     // NewPipe
     implementation 'com.github.TeamNewPipe:NewPipeExtractor:v0.18.0'
-    // YouTube Downloader
+    // YouTube Downloader (Best YouTube scrapping library ever)
     implementation 'com.github.sealedtx:java-youtube-downloader:2.0.1'
 
     // Gson

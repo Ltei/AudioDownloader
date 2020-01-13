@@ -1,5 +1,6 @@
-package com.ltei.audiodownloader.ui
+package com.ltei.audiodownloader.ui.res
 
+import com.ltei.audiodownloader.ui.misc.colorOf
 import javafx.scene.paint.Color
 
 object UIColors {

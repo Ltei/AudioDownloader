@@ -1,7 +1,7 @@
 package com.ltei.audiodownloader.ui.base
 
-import com.ltei.audiodownloader.ui.UIColors
-import com.ltei.audiodownloader.ui.applyTo
+import com.ltei.audiodownloader.ui.res.UIColors
+import com.ltei.audiodownloader.ui.misc.applyTo
 import javafx.event.EventHandler
 import javafx.scene.control.Button
 import javafx.scene.input.MouseEvent

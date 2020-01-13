@@ -1,5 +1,6 @@
 package com.ltei.audiodownloader.ui
 
+import com.ltei.audiodownloader.misc.util.SystemUtils
 import com.ltei.audiodownloader.model.Model
 import com.ltei.audiodownloader.model.Preferences
 import com.ltei.audiodownloader.service.AudioDownloadService
@@ -18,6 +19,7 @@ class Application : App() {
     }
 
     override fun start(stage: Stage) {
+        SystemUtils.setProxy("193.56.47.8", "8080")
         mTimer = Timer()
 
         super.start(stage)

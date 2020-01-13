@@ -1,8 +1,11 @@
 package com.ltei.audiodownloader.ui.ovh
 
 import com.ltei.audiodownloader.model.AudioDownload
-import com.ltei.audiodownloader.ui.*
 import com.ltei.audiodownloader.ui.base.BaseLabel
+import com.ltei.audiodownloader.ui.misc.applyTo
+import com.ltei.audiodownloader.ui.res.UIColors
+import com.ltei.audiodownloader.ui.res.UIConstants
+import com.ltei.audiodownloader.ui.res.UIStylizer
 import javafx.application.Platform
 import javafx.scene.control.ProgressBar
 import javafx.scene.layout.VBox

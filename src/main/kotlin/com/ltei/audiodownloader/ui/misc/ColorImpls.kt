@@ -1,4 +1,4 @@
-package com.ltei.audiodownloader.ui
+package com.ltei.audiodownloader.ui.misc
 
 import javafx.geometry.Insets
 import javafx.scene.control.Button
@@ -21,8 +21,18 @@ fun colorOf(r: Int, g: Int, b: Int): Color = colorOf(r, g, b, 255)
 fun colorOf(lum: Int): Color = colorOf(lum, lum, lum)
 
 fun colorOf(hex: String): Color = when {
-    hex.length == 1 -> colorOf(16 * Integer.valueOf(hex.substring(0..0), 16))
-    hex.length == 2 -> colorOf(Integer.valueOf(hex.substring(0..1), 16))
+    hex.length == 1 -> colorOf(
+        16 * Integer.valueOf(
+            hex.substring(0..0),
+            16
+        )
+    )
+    hex.length == 2 -> colorOf(
+        Integer.valueOf(
+            hex.substring(0..1),
+            16
+        )
+    )
     hex.length == 3 -> colorOf(
         16 * Integer.valueOf(hex.substring(0..0), 16),
         16 * Integer.valueOf(hex.substring(1..1), 16),
