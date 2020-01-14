@@ -1,13 +1,8 @@
 package com.ltei.audiodownloader.model
 
-import com.google.gson.GsonBuilder
+import com.ltei.audiodownloader.Globals
 import com.ltei.audiodownloader.misc.util.fromJson
-import com.ltei.audiodownloader.model.audiosource.AudioSourceUrl
-import com.ltei.audiodownloader.model.serializer.AudioDownloadStateAdapter
-import com.ltei.audiodownloader.model.serializer.AudioSourceUrlAdapter
-import com.ltei.audiodownloader.model.serializer.FileAdapter
 import com.ltei.audiodownloader.service.FileService
-import java.io.File
 
 class Model private constructor(
     val audioDownloads: MutableList<AudioDownload> = mutableListOf()
@@ -15,12 +10,7 @@ class Model private constructor(
 
     companion object {
         private val file = FileService.getOutputFile("model.json")
-        private val gson = GsonBuilder()
-            .registerTypeAdapter(File::class.java, FileAdapter())
-            .registerTypeAdapter(AudioDownload.State::class.java, AudioDownloadStateAdapter())
-            .registerTypeAdapter(AudioSourceUrl::class.java, AudioSourceUrlAdapter())
-            .setPrettyPrinting()
-            .create()
+        private val gson = Globals.persistenceGson
 
         private var mInstance: Model? = null
         val instance: Model

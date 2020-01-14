@@ -55,7 +55,8 @@ class YouTubeAudioSourceUrl(
         val video = Globals.youTubeDownloader.getVideo(videoId)
         return Info(
             format = video.getBestFormat()?.extension()?.value()?.let { if (it == "mp4") "mp3" else it } ?: "mp3",
-            title = video.details().title()
+            title = video.details().title(),
+            tags = video.details().keywords()
         )
     }
 

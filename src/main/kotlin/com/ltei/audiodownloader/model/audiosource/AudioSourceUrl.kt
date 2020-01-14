@@ -14,12 +14,13 @@ abstract class AudioSourceUrl(
     val info: Lazy<Info> = lazy { loadInfo() }
 
     abstract fun downloadTo(outputFile: File, interceptor: DownloadProgressInterceptor? = null)
-    abstract fun loadInfo(): Info
+    protected abstract fun loadInfo(): Info
 
     data class Info(
         val format: String,
         val title: String? = null,
-        val artist: String? = null
+        val artist: String? = null,
+        val tags: List<String> = listOf()
     )
 
     companion object {
@@ -28,7 +29,7 @@ abstract class AudioSourceUrl(
             return try {
                 val url = URL(rawUrl)
                 val host = url.host
-                val query = parseQuery(url.query)
+                val query = url.getParsedQuery()
                 when {
                     host.contains("youtube", ignoreCase = true) -> YouTubeAudioSourceUrl(query.getValue("v"))
                     host.contains("soundcloud", ignoreCase = true) -> SoundCloudAudioSourceUrl(rawUrl)
@@ -41,7 +42,8 @@ abstract class AudioSourceUrl(
             }
         }
 
-        private fun parseQuery(query: String?): Map<String, String> {
+        private fun URL.getParsedQuery(): Map<String, String> {
+            val query = query
             if (query.isNullOrEmpty()) return mapOf()
             val querySplit = query.split('&')
             val result = mutableMapOf<String, String>()

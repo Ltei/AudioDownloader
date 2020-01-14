@@ -1,0 +1,73 @@
+package com.ltei.audiodownloader.ui.misc
+
+import com.ltei.audiodownloader.model.Preferences
+import com.ltei.audiodownloader.ui.RootView
+import com.ltei.audiodownloader.ui.base.BaseButton
+import com.ltei.audiodownloader.ui.base.BaseLabel
+import com.ltei.audiodownloader.ui.res.UIConstants
+import com.ltei.audiodownloader.ui.res.UIStylizer
+import javafx.event.EventHandler
+import javafx.scene.layout.HBox
+import javafx.scene.layout.Priority
+import javafx.scene.layout.VBox
+import javafx.stage.DirectoryChooser
+import tornadofx.add
+import tornadofx.hbox
+import tornadofx.stringBinding
+import java.awt.Desktop
+
+class OutputDirectoryView : VBox() {
+
+    private val outputDirectoryLabel = BaseLabel()
+
+
+    private val selectButton = BaseButton(
+        "Select",
+        onMouseClicked = EventHandler {
+            val chooser = DirectoryChooser()
+            chooser.initialDirectory = Preferences.instance.outputDirectory.value
+            val directory = chooser.showDialog(RootView.instance.currentWindow)
+            if (directory != null && directory.isDirectory) {
+                Preferences.instance.outputDirectory.value = directory
+            }
+        }
+    )
+
+    private val openButton = BaseButton(
+        "Open",
+        onMouseClicked = EventHandler {
+            Desktop.getDesktop().open(Preferences.instance.outputDirectory.value)
+        }
+    )
+
+    init {
+        UIStylizer.setupCardLayout(this)
+        spacing = UIConstants.BASE_SPACING
+
+        add(outputDirectoryLabel)
+
+        hbox {
+            spacing = 10.0
+
+            selectButton.maxWidth = Double.MAX_VALUE
+            HBox.setHgrow(selectButton, Priority.ALWAYS)
+
+            openButton.maxWidth = Double.MAX_VALUE
+            HBox.setHgrow(openButton, Priority.ALWAYS)
+
+            add(selectButton)
+            add(openButton)
+        }
+
+
+        outputDirectoryLabel.textProperty().bind(Preferences.instance.outputDirectory.stringBinding(op = {
+            "Output directory : ${it?.absolutePath}"
+        }))
+    }
+
+    fun setDisabledState(isDisabled: Boolean) {
+        selectButton.isDisable = isDisabled
+        openButton.isDisable = isDisabled
+    }
+
+}

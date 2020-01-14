@@ -6,7 +6,7 @@ import org.schabi.newpipe.extractor.stream.StreamInfo
 import java.io.File
 import java.net.URL
 
-object AudioSourceUtils {
+internal object AudioSourceUtils {
 
     fun downloadFromNewPipeStreamInfo(
         streamInfo: StreamInfo,

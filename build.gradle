@@ -72,6 +72,18 @@ dependencies {
     // OkHttp
     implementation "com.squareup.okhttp3:okhttp:4.3.1"
 
+    // FFMpeg
+    implementation "net.bramp.ffmpeg:ffmpeg:0.6.2"
+
+    // joda
+    implementation "joda-time:joda-time:2.10.5"
+
+    // MP3 reader
+    implementation "com.mpatric:mp3agic:0.9.1"
+
+    // Spotify client
+    implementation "se.michaelthelin.spotify:spotify-web-api-java:4.2.0"
+
     // Test
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }

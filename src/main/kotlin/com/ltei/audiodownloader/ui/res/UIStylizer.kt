@@ -1,7 +1,5 @@
 package com.ltei.audiodownloader.ui.res
 
-import com.ltei.audiodownloader.ui.res.UIColors
-import com.ltei.audiodownloader.ui.res.UIConstants
 import javafx.scene.layout.Region
 import tornadofx.asBackground
 
