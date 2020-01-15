@@ -1,25 +1,49 @@
 package com.ltei.audiodownloader.ui.stage
 
+import com.ltei.audiodownloader.model.AudioMetadata
 import com.ltei.audiodownloader.model.Preferences
-import com.ltei.audiodownloader.ui.view.base.BaseButton
-import com.ltei.audiodownloader.ui.view.base.BaseLabel
-import com.ltei.audiodownloader.ui.view.base.BaseToggleButton
 import com.ltei.audiodownloader.ui.misc.applyTo
 import com.ltei.audiodownloader.ui.res.UIColors
 import com.ltei.audiodownloader.ui.res.UIConstants
+import com.ltei.audiodownloader.ui.res.UIStylizer
+import com.ltei.audiodownloader.ui.view.base.BaseButton
+import com.ltei.audiodownloader.ui.view.base.BaseLabel
+import com.ltei.audiodownloader.ui.view.base.BaseToggleButton
+import com.ltei.audiodownloader.ui.view.ovh.AudioMetadataBuilderView
+import javafx.application.Platform
 import javafx.event.EventHandler
 import javafx.scene.Group
 import javafx.scene.Scene
+import javafx.scene.control.ProgressIndicator
+import javafx.scene.control.ScrollPane
 import javafx.scene.control.TextField
 import javafx.scene.layout.Region
-import javafx.scene.layout.VBox
+import javafx.scene.layout.StackPane
 import javafx.stage.Stage
-import tornadofx.add
-import tornadofx.asBackground
+import tornadofx.*
+import kotlin.concurrent.thread
 
-class CreateDownloadStage(defaultFileName: String) : Stage() {
+class CreateDownloadStage(
+    defaultFileName: String,
+    audioMetadata: AudioMetadata
+) : Stage() {
+
+    private val loadingView = ProgressIndicator()
 
     private val fileNameField = TextField(defaultFileName)
+
+    private val metadataView = AudioMetadataBuilderView()
+
+    private val autofillMetadataButton = BaseButton("Autofill Metadata", onMouseClicked = EventHandler {
+        setLoadingState(true)
+        thread {
+            metadataView.boundObject?.autofill()
+            Platform.runLater {
+                metadataView.updateViewFromObject()
+                setLoadingState(false)
+            }
+        }
+    })
 
     private val storeInfoToggleButton = BaseToggleButton(
         isOn = Preferences.instance.storeAudioInfo.value,
@@ -34,29 +58,62 @@ class CreateDownloadStage(defaultFileName: String) : Stage() {
         }
     )
 
+    private val downloadButton = BaseButton("Download", onMouseClicked = EventHandler {
+        this@CreateDownloadStage.close()
+    })
+
     init {
         setOnCloseRequest { this@CreateDownloadStage.close() }
 
         title = "Download audio"
 
-        val root = VBox().apply {
-            background = UIColors.BACKGROUND.asBackground()
-            prefWidth = UIConstants.BASE_DIALOG_WIDTH
-            minHeight = Region.USE_PREF_SIZE
-            spacing = UIConstants.BASE_SPACING
-            padding = UIConstants.BASE_INSETS
+        val root = StackPane().apply {
+            scrollpane {
+                vbox {
+                    background = UIColors.BACKGROUND.asBackground()
+                    prefWidth = UIConstants.BASE_DIALOG_WIDTH
+                    minHeight = Region.USE_PREF_SIZE
+                    spacing = UIConstants.BASE_SPACING
+                    padding = UIConstants.BASE_INSETS
 
-            add(BaseLabel("Output file name :"))
-            add(fileNameField)
-            add(storeInfoToggleButton)
-            add(BaseButton("Download", onMouseClicked = EventHandler {
-                this@CreateDownloadStage.close()
-            }))
+                    vbox {
+                        UIStylizer.setupCardLayout(this)
+                        spacing = UIConstants.BASE_SPACING
+
+                        add(BaseLabel("Output file name :"))
+                        add(fileNameField)
+                    }
+
+                    add(BaseLabel("Metadata"))
+                    add(metadataView.apply {
+                        UIStylizer.setupCardLayout(this)
+                        boundObject = audioMetadata
+                        updateViewFromObject()
+                    })
+
+                    add(autofillMetadataButton)
+                    add(storeInfoToggleButton)
+                    add(downloadButton)
+                }
+            }
+
+            add(loadingView)
         }
 
         Preferences.instance.storeAudioInfo.bindBidirectional(storeInfoToggleButton.isOn)
 
         scene = Scene(Group(root))
+    }
+
+    init {
+        setLoadingState(false)
+    }
+
+    private fun setLoadingState(isLoading: Boolean) {
+        autofillMetadataButton.isDisable = isLoading
+        storeInfoToggleButton.isDisable = isLoading
+        downloadButton.isDisable = isLoading
+        loadingView.isVisible = isLoading
     }
 
     override fun close() {
