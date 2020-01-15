@@ -1,4 +1,4 @@
-package com.ltei.audiodownloader.ui.ovh
+package com.ltei.audiodownloader.ui.view.ovh
 
 import com.ltei.audiodownloader.model.AudioDownload
 import com.ltei.audiodownloader.model.Model

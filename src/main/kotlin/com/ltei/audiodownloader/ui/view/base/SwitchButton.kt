@@ -1,4 +1,4 @@
-package com.ltei.audiodownloader.ui.base
+package com.ltei.audiodownloader.ui.view.base
 
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.event.EventHandler

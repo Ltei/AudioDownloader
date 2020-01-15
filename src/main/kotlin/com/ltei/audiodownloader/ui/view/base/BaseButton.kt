@@ -1,4 +1,4 @@
-package com.ltei.audiodownloader.ui.base
+package com.ltei.audiodownloader.ui.view.base
 
 import com.ltei.audiodownloader.ui.res.UIColors
 import com.ltei.audiodownloader.ui.misc.applyTo

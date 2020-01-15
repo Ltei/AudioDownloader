@@ -1,4 +1,4 @@
-package com.ltei.audiodownloader.ui.ovh
+package com.ltei.audiodownloader.ui.view.ovh
 
 import javafx.scene.Node
 import javafx.scene.control.ListCell

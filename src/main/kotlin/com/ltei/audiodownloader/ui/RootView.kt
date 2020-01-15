@@ -9,15 +9,15 @@ import com.ltei.audiodownloader.model.Model
 import com.ltei.audiodownloader.model.Preferences
 import com.ltei.audiodownloader.model.audiosource.AudioSourceUrl
 import com.ltei.audiodownloader.service.AudioDownloadService
-import com.ltei.audiodownloader.ui.base.BaseButton
-import com.ltei.audiodownloader.ui.base.BaseLabel
-import com.ltei.audiodownloader.ui.misc.CreateDownloadDialog
-import com.ltei.audiodownloader.ui.misc.OutputDirectoryView
-import com.ltei.audiodownloader.ui.misc.SettingsDialog
-import com.ltei.audiodownloader.ui.ovh.AudioDownloadListView
+import com.ltei.audiodownloader.ui.view.base.BaseButton
+import com.ltei.audiodownloader.ui.view.base.BaseLabel
+import com.ltei.audiodownloader.ui.view.OutputDirectoryView
+import com.ltei.audiodownloader.ui.view.ovh.AudioDownloadListView
 import com.ltei.audiodownloader.ui.res.UIColors
 import com.ltei.audiodownloader.ui.res.UIConstants
 import com.ltei.audiodownloader.ui.res.UIStylizer
+import com.ltei.audiodownloader.ui.stage.CreateDownloadStage
+import com.ltei.audiodownloader.ui.stage.SettingsStage
 import javafx.application.Platform
 import javafx.event.EventHandler
 import javafx.scene.control.ProgressIndicator
@@ -67,7 +67,7 @@ class RootView : View(), AudioDownloadService.Listener {
             prefHeight = 30.0
 
             add(BaseButton("Settings", onMouseClicked = EventHandler {
-                val dialog = SettingsDialog()
+                val dialog = SettingsStage()
                 dialog.initOwner(currentStage ?: primaryStage)
                 dialog.initModality(Modality.WINDOW_MODAL)
                 dialog.showAndWait()
@@ -134,6 +134,10 @@ class RootView : View(), AudioDownloadService.Listener {
 
         audioDownloadListView.boundObject = Model.instance.audioDownloads
         audioDownloadListView.updateViewFromObject()
+
+        // Focus url field by default
+        audioSourceUrlField.requestFocus()
+        audioSourceUrlField.selectAll()
     }
 
     override fun onDelete() {
@@ -150,11 +154,13 @@ class RootView : View(), AudioDownloadService.Listener {
 
             Platform.runLater {
                 setLoadingState(false)
-                val dialog = CreateDownloadDialog(title)
+                val dialog = CreateDownloadStage(title)
                 dialog.initOwner(primaryStage)
-                dialog.showAndWait().ifPresent { result ->
+                dialog.showAndWait()
+                val result = dialog.getResult()
+                if (result != null) {
                     if (result.fileName.isNotBlank()) {
-                        if (result.storeInfo) {
+                        if (Preferences.instance.storeAudioInfo.value) {
                             val infoFile = File(
                                 Preferences.instance.outputDirectory.value,
                                 "${result.fileName} (Info).json"

@@ -1,9 +1,9 @@
-package com.ltei.audiodownloader.ui.misc
+package com.ltei.audiodownloader.ui.view
 
 import com.ltei.audiodownloader.model.Preferences
 import com.ltei.audiodownloader.ui.RootView
-import com.ltei.audiodownloader.ui.base.BaseButton
-import com.ltei.audiodownloader.ui.base.BaseLabel
+import com.ltei.audiodownloader.ui.view.base.BaseButton
+import com.ltei.audiodownloader.ui.view.base.BaseLabel
 import com.ltei.audiodownloader.ui.res.UIConstants
 import com.ltei.audiodownloader.ui.res.UIStylizer
 import javafx.event.EventHandler
@@ -19,7 +19,6 @@ import java.awt.Desktop
 class OutputDirectoryView : VBox() {
 
     private val outputDirectoryLabel = BaseLabel()
-
 
     private val selectButton = BaseButton(
         "Select",
