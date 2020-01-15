@@ -1,8 +1,7 @@
 package com.ltei.audiodownloader.ui
 
 import com.ltei.audiodownloader.Globals
-import com.ltei.audiodownloader.misc.ContinuousTask
-import com.ltei.audiodownloader.misc.DownloaderImpl
+import com.ltei.audiodownloader.misc.RecurrentTask
 import com.ltei.audiodownloader.misc.debug.Logger
 import com.ltei.audiodownloader.misc.util.ListUtils
 import com.ltei.audiodownloader.model.AudioDownload
@@ -10,6 +9,7 @@ import com.ltei.audiodownloader.model.Model
 import com.ltei.audiodownloader.model.Preferences
 import com.ltei.audiodownloader.model.audiosource.AudioSourceUrl
 import com.ltei.audiodownloader.service.AudioDownloadService
+import com.ltei.audiodownloader.ui.misc.asBackground
 import com.ltei.audiodownloader.ui.res.UIColors
 import com.ltei.audiodownloader.ui.res.UIConstants
 import com.ltei.audiodownloader.ui.res.UIStylizer
@@ -24,17 +24,14 @@ import javafx.event.EventHandler
 import javafx.scene.control.ProgressIndicator
 import javafx.scene.control.TextField
 import javafx.scene.layout.Priority
+import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox
 import javafx.stage.Modality
-import org.schabi.newpipe.extractor.NewPipe
-import tornadofx.View
-import tornadofx.asBackground
-import tornadofx.stackpane
-import tornadofx.vbox
+import javafx.stage.Stage
 import kotlin.concurrent.thread
 
 
-class RootView : View(), AudioDownloadService.Listener {
+class RootView(val stage: Stage) : VBox(), AudioDownloadService.Listener {
 
     private val logger = Logger(RootView::class.java)
 
@@ -53,75 +50,78 @@ class RootView : View(), AudioDownloadService.Listener {
 
     private val loadingView = ProgressIndicator()
 
-    override val root = vbox {
+    private var currentDownload: AudioDownload? = null
+    private var audioDownloadListUpdateTask = RecurrentTask(Application.timer, 100L) {
+        currentDownload?.let {
+            audioDownloadListView.findCell(it)?.updateViewOnStateChanged()
+        }
+    }
+
+    // Init layout
+
+    init {
         background = UIColors.BACKGROUND.asBackground()
         prefWidth = UIConstants.ROOT_WIDTH
         prefHeight = UIConstants.ROOT_HEIGHT
 
         // Toolbar
-        vbox {
+        children.add(VBox().apply {
             background = UIColors.RED.asBackground()
             prefWidth = Double.MAX_VALUE
 
-            add(BaseButton("Settings", onMouseClicked = EventHandler {
+            children.add(BaseButton("Settings", onMouseClicked = EventHandler {
                 val dialog = SettingsStage()
-                dialog.initOwner(currentStage ?: primaryStage)
+                dialog.initOwner(stage)
                 dialog.initModality(Modality.WINDOW_MODAL)
                 dialog.showAndWait()
             }))
-        }
+        })
 
-        stackpane {
+        children.add(StackPane().apply {
 
-            vbox {
+            children.add(VBox().apply {
                 prefWidth = UIConstants.ROOT_WIDTH
                 prefHeight = UIConstants.ROOT_HEIGHT
                 spacing = UIConstants.BASE_SPACING
                 padding = UIConstants.BASE_INSETS
 
-                add(outputDirectoryView.apply {
+                children.add(outputDirectoryView.apply {
                     UIStylizer.setupCardLayout(this)
                 })
 
                 // Audio Source
-                vbox {
+                children.add(VBox().apply {
                     UIStylizer.setupCardLayout(this)
                     spacing = UIConstants.BASE_SPACING
 
-                    add(BaseLabel("Audio source url :"))
-                    add(audioSourceUrlField)
-                    add(sourceLabel)
-                }
+                    children.add(BaseLabel("Audio source url :"))
+                    children.add(audioSourceUrlField)
+                    children.add(sourceLabel)
+                })
 
-                add(downloadButton)
+                children.add(downloadButton)
 
-                add(audioDownloadListView.apply {
+                children.add(audioDownloadListView.apply {
                     VBox.setVgrow(this, Priority.ALWAYS)
                     prefHeight = 0.0
 //            maxHeight = 9999.0
                 })
-            }
+            })
 
-            add(loadingView.apply {
+            children.add(loadingView.apply {
                 prefWidth = 50.0
                 maxWidth = 50.0
                 prefHeight = 50.0
                 maxHeight = 50.0
                 isVisible = false
             })
-        }
+        })
     }
 
-    private var currentDownload: AudioDownload? = null
-    private var audioDownloadListUpdateTask = ContinuousTask(Application.timer, 100L) {
-        currentDownload?.let {
-            audioDownloadListView.findCell(it)?.updateViewOnStateChanged()
-        }
-    }
+    // Init data
 
     init {
         instance = this
-        NewPipe.init(DownloaderImpl)
 
         audioSourceUrlField.textProperty().addListener { _, _, newValue ->
             val audioUrl = AudioSourceUrl.parse(newValue)
@@ -136,11 +136,11 @@ class RootView : View(), AudioDownloadService.Listener {
         // Focus url field by default
         audioSourceUrlField.requestFocus()
         audioSourceUrlField.selectAll()
-    }
 
-    override fun onDelete() {
-        super.onDelete()
-        AudioDownloadService.listeners.remove(this)
+        stage.onCloseRequest = EventHandler {
+            AudioDownloadService.listeners.remove(this)
+            stage.close()
+        }
     }
 
     private fun download(audioUrl: AudioSourceUrl) {
@@ -153,7 +153,7 @@ class RootView : View(), AudioDownloadService.Listener {
             Platform.runLater {
                 setLoadingState(false)
                 val dialog = CreateDownloadStage(title, info.metadata)
-                dialog.initOwner(primaryStage)
+                dialog.initOwner(stage)
                 dialog.showAndWait()
                 val result = dialog.result
                 if (result != null) {

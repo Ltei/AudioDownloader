@@ -3,12 +3,12 @@ package com.ltei.audiodownloader.ui.view.ovh
 import com.ltei.audiodownloader.model.AudioDownload
 import com.ltei.audiodownloader.model.Model
 import com.ltei.audiodownloader.service.AudioDownloadService
+import com.ltei.audiodownloader.ui.misc.asObservable
 import javafx.event.EventHandler
 import javafx.scene.control.ContextMenu
 import javafx.scene.control.ListView
 import javafx.scene.control.MenuItem
 import javafx.util.Callback
-import tornadofx.asObservable
 import java.awt.Desktop
 import java.util.*
 

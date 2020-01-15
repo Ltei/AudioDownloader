@@ -3,6 +3,7 @@ package com.ltei.audiodownloader.ui.stage
 import com.ltei.audiodownloader.model.AudioMetadata
 import com.ltei.audiodownloader.model.Preferences
 import com.ltei.audiodownloader.ui.misc.applyTo
+import com.ltei.audiodownloader.ui.misc.asBackground
 import com.ltei.audiodownloader.ui.res.UIColors
 import com.ltei.audiodownloader.ui.res.UIConstants
 import com.ltei.audiodownloader.ui.res.UIStylizer
@@ -14,13 +15,11 @@ import javafx.application.Platform
 import javafx.event.EventHandler
 import javafx.scene.Scene
 import javafx.scene.control.ProgressIndicator
+import javafx.scene.control.ScrollPane
 import javafx.scene.control.TextField
 import javafx.scene.layout.StackPane
+import javafx.scene.layout.VBox
 import javafx.stage.Stage
-import tornadofx.add
-import tornadofx.asBackground
-import tornadofx.scrollpane
-import tornadofx.vbox
 import kotlin.concurrent.thread
 
 class CreateDownloadStage(
@@ -72,42 +71,45 @@ class CreateDownloadStage(
         title = "Download audio"
 
         val root = StackPane().apply {
+            background = UIColors.RED.asBackground()
             prefWidth = Double.MAX_VALUE
 
-            scrollpane {
-                background = UIColors.BACKGROUND.asBackground()
-                prefWidth = Double.MAX_VALUE
-                isFitToHeight = true
-                isFitToWidth = true
-
-                vbox {
+//            children.add(ScrollPane().apply {
+//                background = UIColors.BACKGROUND.asBackground()
+//                prefWidth = Double.MAX_VALUE
+//                prefHeight = Double.MAX_VALUE
+//                isFitToHeight = true
+//                isFitToWidth = true
+//
+                children.add(VBox().apply {
                     background = UIColors.BACKGROUND.asBackground()
                     prefWidth = Double.MAX_VALUE
                     padding = UIConstants.BASE_INSETS
                     spacing = UIConstants.BASE_SPACING
 
-                    vbox {
+                    children.add(VBox().apply {
                         UIStylizer.setupCardLayout(this)
                         spacing = UIConstants.BASE_SPACING
 
-                        add(BaseLabel("Output file name :"))
-                        add(fileNameField)
-                    }
+                        children.add(BaseLabel("Output file name :"))
+                        children.add(fileNameField)
+                    })
 
-                    add(BaseLabel("Metadata"))
-                    add(metadataView.apply {
+                    children.add(BaseLabel("Metadata"))
+                    children.add(metadataView.apply {
                         UIStylizer.setupCardLayout(this)
                         boundObject = audioMetadata
                         updateViewFromObject()
                     })
 
-                    add(autofillMetadataButton)
-                    add(storeInfoToggleButton)
-                    add(downloadButton)
-                }
-            }
+                    children.add(autofillMetadataButton)
+                    children.add(storeInfoToggleButton)
+                    children.add(downloadButton)
+                })
+//            })
 
-            add(loadingView)
+            children.add(loadingView)
+
         }
 
         Preferences.instance.storeAudioInfo.bindBidirectional(storeInfoToggleButton.isOn)

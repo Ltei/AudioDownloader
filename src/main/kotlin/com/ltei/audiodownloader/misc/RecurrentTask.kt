@@ -2,7 +2,7 @@ package com.ltei.audiodownloader.misc
 
 import java.util.*
 
-class ContinuousTask(
+class RecurrentTask(
     private val timer: Timer,
     private val cooldown: Long,
     private val block: () -> Unit

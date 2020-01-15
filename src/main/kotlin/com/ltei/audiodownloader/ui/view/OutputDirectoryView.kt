@@ -2,6 +2,7 @@ package com.ltei.audiodownloader.ui.view
 
 import com.ltei.audiodownloader.model.Preferences
 import com.ltei.audiodownloader.ui.RootView
+import com.ltei.audiodownloader.ui.misc.stringBinding
 import com.ltei.audiodownloader.ui.view.base.BaseButton
 import com.ltei.audiodownloader.ui.view.base.BaseLabel
 import com.ltei.audiodownloader.ui.res.UIConstants
@@ -11,9 +12,6 @@ import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import javafx.stage.DirectoryChooser
-import tornadofx.add
-import tornadofx.hbox
-import tornadofx.stringBinding
 import java.awt.Desktop
 
 class OutputDirectoryView : VBox() {
@@ -25,7 +23,7 @@ class OutputDirectoryView : VBox() {
         onMouseClicked = EventHandler {
             val chooser = DirectoryChooser()
             chooser.initialDirectory = Preferences.instance.outputDirectory.value
-            val directory = chooser.showDialog(RootView.instance.currentWindow)
+            val directory = chooser.showDialog(RootView.instance.stage)
             if (directory != null && directory.isDirectory) {
                 Preferences.instance.outputDirectory.value = directory
             }
@@ -43,9 +41,9 @@ class OutputDirectoryView : VBox() {
         UIStylizer.setupCardLayout(this)
         spacing = UIConstants.BASE_SPACING
 
-        add(outputDirectoryLabel)
+        children.add(outputDirectoryLabel)
 
-        hbox {
+        children.add(HBox().apply {
             spacing = 10.0
 
             selectButton.maxWidth = Double.MAX_VALUE
@@ -54,9 +52,9 @@ class OutputDirectoryView : VBox() {
             openButton.maxWidth = Double.MAX_VALUE
             HBox.setHgrow(openButton, Priority.ALWAYS)
 
-            add(selectButton)
-            add(openButton)
-        }
+            children.add(selectButton)
+            children.add(openButton)
+        })
 
 
         outputDirectoryLabel.textProperty().bind(Preferences.instance.outputDirectory.stringBinding(op = {

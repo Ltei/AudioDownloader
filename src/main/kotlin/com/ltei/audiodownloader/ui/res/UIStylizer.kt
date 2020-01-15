@@ -1,7 +1,7 @@
 package com.ltei.audiodownloader.ui.res
 
+import com.ltei.audiodownloader.ui.misc.asBackground
 import javafx.scene.layout.Region
-import tornadofx.asBackground
 
 object UIStylizer {
 

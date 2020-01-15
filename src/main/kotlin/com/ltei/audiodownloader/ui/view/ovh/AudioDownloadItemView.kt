@@ -8,9 +8,8 @@ import com.ltei.audiodownloader.ui.res.UIConstants
 import com.ltei.audiodownloader.ui.res.UIStylizer
 import javafx.application.Platform
 import javafx.scene.control.ProgressBar
+import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox
-import tornadofx.add
-import tornadofx.stackpane
 
 class AudioDownloadItemView(override var boundObject: AudioDownload? = null) : VBox(), ObjectViewHolder<AudioDownload> {
     private val sourceLabel = BaseLabel()
@@ -24,16 +23,16 @@ class AudioDownloadItemView(override var boundObject: AudioDownload? = null) : V
         UIStylizer.setupCardLayout(this)
         spacing = UIConstants.BASE_SPACING / 5.0
 
-        add(sourceLabel)
-        add(fileLabel)
+        children.add(sourceLabel)
+        children.add(fileLabel)
 
-        stackpane {
-            add(downloadProgressBar.apply {
+        children.add(StackPane().apply {
+            children.add(downloadProgressBar.apply {
                 prefWidth = Double.MAX_VALUE
                 progress = 0.0
             })
-            add(downloadStateLabel)
-        }
+            children.add(downloadStateLabel)
+        })
 
         updateViewFromObject()
     }

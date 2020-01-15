@@ -5,14 +5,12 @@ import com.ltei.audiodownloader.ui.res.UIConstants
 import com.ltei.audiodownloader.ui.view.base.BaseLabel
 import com.ltei.audiodownloader.ui.view.base.JodaDatePicker
 import com.ltei.audiodownloader.ui.view.base.TextListField
-import javafx.geometry.Insets
 import javafx.scene.Node
 import javafx.scene.control.TextField
 import javafx.scene.layout.VBox
-import tornadofx.add
-import tornadofx.label
 
-class AudioMetadataBuilderView(override var boundObject: AudioMetadata? = null) : VBox(), ObjectBuilderViewHolder<AudioMetadata> {
+class AudioMetadataBuilderView(override var boundObject: AudioMetadata? = null) : VBox(),
+    ObjectBuilderViewHolder<AudioMetadata> {
 
     override val rootNode: Node get() = this
 
@@ -25,28 +23,24 @@ class AudioMetadataBuilderView(override var boundObject: AudioMetadata? = null) 
 
     init {
         padding = UIConstants.BASE_INSETS
+        spacing = UIConstants.BASE_SPACING
 
-        add(BaseLabel("Title :"))
-        add(titleView.apply {
-            VBox.setMargin(this, Insets(0.0, 0.0, UIConstants.BASE_PADDING, 0.0))
-        })
-        add(BaseLabel("Artists :"))
-        add(artistsView.apply {
-            VBox.setMargin(this, Insets(0.0, 0.0, UIConstants.BASE_PADDING, 0.0))
-        })
-        add(BaseLabel("Album :"))
-        add(albumView.apply {
-            VBox.setMargin(this, Insets(0.0, 0.0, UIConstants.BASE_PADDING, 0.0))
-        })
-        add(BaseLabel("Release date :"))
-        add(releaseDateView.apply {
+        children.add(BaseLabel("Title :"))
+        children.add(titleView)
+
+        children.add(BaseLabel("Artists :"))
+        children.add(artistsView)
+
+        children.add(BaseLabel("Album :"))
+        children.add(albumView)
+
+        children.add(BaseLabel("Release date :"))
+        children.add(releaseDateView.apply {
             maxWidth = Double.MAX_VALUE
-            VBox.setMargin(this, Insets(0.0, 0.0, UIConstants.BASE_PADDING, 0.0))
         })
-        add(BaseLabel("Tags :"))
-        add(tagsView.apply {
-            VBox.setMargin(this, Insets(0.0, 0.0, UIConstants.BASE_PADDING, 0.0))
-        })
+
+        children.add(BaseLabel("Tags :"))
+        children.add(tagsView)
     }
 
     override fun updateViewFromObject() {
