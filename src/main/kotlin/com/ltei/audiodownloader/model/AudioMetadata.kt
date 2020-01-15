@@ -38,39 +38,47 @@ data class AudioMetadata(
         }
 
         // Spotify metadata
-        title?.let { currentMetadataTitle ->
-            val searchQuery = StringBuilder(currentMetadataTitle)
-            artists?.let { artists ->
-                for (artist in artists) searchQuery.append(' ').append(artist)
-            }
-            val track = SpotifyClient.searchTrack(searchQuery.toString()).firstOrNull()
-            if (track != null) {
-                if (!artists.hasNonBlankString()) artists = track.artists?.map { it.name }
-                if (album.isNullOrBlank()) album = track.album?.name
-            }
-        }
+//        try {
+//            title?.let { currentMetadataTitle ->
+//                val searchQuery = StringBuilder(currentMetadataTitle)
+//                artists?.let { artists ->
+//                    for (artist in artists) searchQuery.append(' ').append(artist)
+//                }
+//                val track = SpotifyClient.searchTrack(searchQuery.toString()).firstOrNull()
+//                if (track != null) {
+//                    if (!artists.hasNonBlankString()) artists = track.artists?.map { it.name }
+//                    if (album.isNullOrBlank()) album = track.album?.name
+//                }
+//            }
+//        } catch (e: Exception) {
+//            IllegalStateException("Error while trying to get info from Spotify", e).printStackTrace()
+//        }
 
         // LastFm metadata
-        title?.let { currentMetadataTitle ->
-            val dateTimeFormatter = DateTimeFormat.forPattern("dd MMM YYYY, HH:mm")
-            val searchQuery = StringBuilder(currentMetadataTitle)
-            artists?.let { artists ->
-                for (artist in artists) searchQuery.append(' ').append(artist)
-            }
-            val track = LastFmClient.searchTrack(searchQuery.toString()).firstOrNull()
-            if (track != null) {
-                val info = LastFmClient.getTrackInfo(track.mbid)
-                if (!artists.hasNonBlankString()) artists = listOf(info.artist.name)
-                if (album.isNullOrBlank()) album = info.album.title
-                try {
-                    if (releaseDate == null) {
-                        releaseDate = dateTimeFormatter.parseLocalDate(info.wiki.published)
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
+        try {
+            title?.let { currentMetadataTitle ->
+                val dateTimeFormatter = DateTimeFormat.forPattern("dd MMM YYYY, HH:mm")
+                val searchQuery = StringBuilder(currentMetadataTitle)
+                artists?.let { artists ->
+                    for (artist in artists) searchQuery.append(' ').append(artist)
                 }
-                tags = ListUtils.concat(tags, info.topTags)
+                val track = LastFmClient.searchTrack(searchQuery.toString()).firstOrNull()
+                if (track != null) {
+                    val info = LastFmClient.getTrackInfo(track.mbid)
+                    if (!artists.hasNonBlankString()) artists = listOf(info.artist.name)
+                    if (album.isNullOrBlank()) album = info.album.title
+                    try {
+                        if (releaseDate == null && info.wiki?.published != null) {
+                            releaseDate = dateTimeFormatter.parseLocalDate(info.wiki.published)
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                    tags = ListUtils.concat(tags, info.topTags)
+                }
             }
+        } catch (e: Exception) {
+            IllegalStateException("Error while trying to get info from LastFm", e).printStackTrace()
         }
 
         normalize()

@@ -4,6 +4,7 @@ import com.ltei.audiodownloader.Globals
 import com.ltei.audiodownloader.misc.ContinuousTask
 import com.ltei.audiodownloader.misc.DownloaderImpl
 import com.ltei.audiodownloader.misc.debug.Logger
+import com.ltei.audiodownloader.misc.util.ListUtils
 import com.ltei.audiodownloader.model.AudioDownload
 import com.ltei.audiodownloader.model.Model
 import com.ltei.audiodownloader.model.Preferences
@@ -149,12 +150,12 @@ class RootView : View(), AudioDownloadService.Listener {
         setLoadingState(true)
         thread {
             val info = audioUrl.info.value
-            var title = info.title ?: "Unknown title"
-            info.artist?.let { artist -> title = "$artist - $title" }
+            var title = info.metadata.title ?: "Unknown title"
+            info.metadata.artists?.let { artists -> title = "${ListUtils.format(artists)} - $title" }
 
             Platform.runLater {
                 setLoadingState(false)
-                val dialog = CreateDownloadStage(title)
+                val dialog = CreateDownloadStage(title, info.metadata)
                 dialog.initOwner(primaryStage)
                 dialog.showAndWait()
                 val result = dialog.getResult()

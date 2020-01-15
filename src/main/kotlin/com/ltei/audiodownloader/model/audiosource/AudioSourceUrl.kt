@@ -1,6 +1,7 @@
 package com.ltei.audiodownloader.model.audiosource
 
 import com.google.gson.annotations.Expose
+import com.ltei.audiodownloader.model.AudioMetadata
 import com.ltei.audiodownloader.model.DownloadProgressInterceptor
 import java.io.File
 import java.net.URL
@@ -18,9 +19,7 @@ abstract class AudioSourceUrl(
 
     data class Info(
         val format: String,
-        val title: String? = null,
-        val artist: String? = null,
-        val tags: List<String> = listOf()
+        val metadata: AudioMetadata
     )
 
     companion object {

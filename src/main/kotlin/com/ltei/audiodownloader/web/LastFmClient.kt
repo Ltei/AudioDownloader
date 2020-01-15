@@ -3,6 +3,7 @@ package com.ltei.audiodownloader.web
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.ltei.audiodownloader.misc.util.fromJson
+import com.ltei.audiodownloader.misc.util.getOrNull
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.GET
@@ -68,7 +69,7 @@ interface LastFmClient {
                 topTags = trackJson["toptags"].asJsonObject["tag"].asJsonArray.map {
                     it.asJsonObject["name"].asString
                 },
-                wiki = GSON.fromJson(trackJson["wiki"])
+                wiki = trackJson.getOrNull("wiki")?.let { GSON.fromJson<TrackInfo.Wiki>(it) }
             )
         }
     }
@@ -85,7 +86,7 @@ interface LastFmClient {
         val artist: Artist,
         val album: Album,
         val topTags: List<String>,
-        val wiki: Wiki
+        val wiki: Wiki?
     ) {
         data class Artist(
             val name: String

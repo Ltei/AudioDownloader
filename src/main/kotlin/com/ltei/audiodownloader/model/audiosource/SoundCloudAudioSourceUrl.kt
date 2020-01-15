@@ -1,5 +1,6 @@
 package com.ltei.audiodownloader.model.audiosource
 
+import com.ltei.audiodownloader.model.AudioMetadata
 import com.ltei.audiodownloader.model.DownloadProgressInterceptor
 import com.ltei.audiodownloader.web.SoundCloudScrapper
 import org.schabi.newpipe.extractor.ServiceList
@@ -26,8 +27,10 @@ class SoundCloudAudioSourceUrl(
         val snippet = SoundCloudScrapper.getAudioInfo(rawUrl)
         return Info(
             format = format,
-            title = snippet?.title,
-            artist = snippet?.artist
+            metadata = AudioMetadata(
+                title = snippet?.title,
+                artists = snippet?.artist?.let { listOf(it) } ?: listOf()
+            )
         )
     }
 
