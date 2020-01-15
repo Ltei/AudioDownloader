@@ -12,21 +12,24 @@ import com.ltei.audiodownloader.ui.view.base.BaseToggleButton
 import com.ltei.audiodownloader.ui.view.ovh.AudioMetadataBuilderView
 import javafx.application.Platform
 import javafx.event.EventHandler
-import javafx.scene.Group
 import javafx.scene.Scene
 import javafx.scene.control.ProgressIndicator
-import javafx.scene.control.ScrollPane
 import javafx.scene.control.TextField
-import javafx.scene.layout.Region
 import javafx.scene.layout.StackPane
 import javafx.stage.Stage
-import tornadofx.*
+import tornadofx.add
+import tornadofx.asBackground
+import tornadofx.scrollpane
+import tornadofx.vbox
 import kotlin.concurrent.thread
 
 class CreateDownloadStage(
     defaultFileName: String,
     audioMetadata: AudioMetadata
 ) : Stage() {
+
+    var result: Result? = null
+        private set
 
     private val loadingView = ProgressIndicator()
 
@@ -59,6 +62,7 @@ class CreateDownloadStage(
     )
 
     private val downloadButton = BaseButton("Download", onMouseClicked = EventHandler {
+        result = Result(fileName = fileNameField.text)
         this@CreateDownloadStage.close()
     })
 
@@ -68,13 +72,19 @@ class CreateDownloadStage(
         title = "Download audio"
 
         val root = StackPane().apply {
+            prefWidth = Double.MAX_VALUE
+
             scrollpane {
+                background = UIColors.BACKGROUND.asBackground()
+                prefWidth = Double.MAX_VALUE
+                isFitToHeight = true
+                isFitToWidth = true
+
                 vbox {
                     background = UIColors.BACKGROUND.asBackground()
-                    prefWidth = UIConstants.BASE_DIALOG_WIDTH
-                    minHeight = Region.USE_PREF_SIZE
-                    spacing = UIConstants.BASE_SPACING
+                    prefWidth = Double.MAX_VALUE
                     padding = UIConstants.BASE_INSETS
+                    spacing = UIConstants.BASE_SPACING
 
                     vbox {
                         UIStylizer.setupCardLayout(this)
@@ -102,7 +112,8 @@ class CreateDownloadStage(
 
         Preferences.instance.storeAudioInfo.bindBidirectional(storeInfoToggleButton.isOn)
 
-        scene = Scene(Group(root))
+        scene = Scene(root)
+        width = UIConstants.BASE_DIALOG_WIDTH
     }
 
     init {
@@ -120,8 +131,6 @@ class CreateDownloadStage(
         Preferences.instance.storeAudioInfo.unbindBidirectional(storeInfoToggleButton.isOn)
         super.close()
     }
-
-    fun getResult(): Result? = Result(fileName = fileNameField.text)
 
     data class Result(val fileName: String)
 

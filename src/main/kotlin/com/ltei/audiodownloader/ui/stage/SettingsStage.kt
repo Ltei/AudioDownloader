@@ -2,18 +2,16 @@ package com.ltei.audiodownloader.ui.stage
 
 import com.ltei.audiodownloader.model.DownloadOutputMode
 import com.ltei.audiodownloader.model.Preferences
-import com.ltei.audiodownloader.ui.view.base.BaseButton
-import com.ltei.audiodownloader.ui.view.base.BaseLabel
-import com.ltei.audiodownloader.ui.view.base.BaseToggleButton
 import com.ltei.audiodownloader.ui.misc.applyTo
 import com.ltei.audiodownloader.ui.res.UIColors
 import com.ltei.audiodownloader.ui.res.UIConstants
 import com.ltei.audiodownloader.ui.res.UIStylizer
+import com.ltei.audiodownloader.ui.view.base.BaseButton
+import com.ltei.audiodownloader.ui.view.base.BaseLabel
+import com.ltei.audiodownloader.ui.view.base.BaseToggleButton
 import javafx.event.EventHandler
-import javafx.scene.Group
 import javafx.scene.Scene
 import javafx.scene.control.Spinner
-import javafx.scene.layout.Region
 import javafx.scene.layout.VBox
 import javafx.stage.Stage
 import tornadofx.add
@@ -40,16 +38,13 @@ class SettingsStage : Stage() {
     )
 
     init {
-        setOnCloseRequest {
-            this@SettingsStage.close()
-        }
-
+        setOnCloseRequest { this@SettingsStage.close() }
         title = "Settings"
 
         val root = VBox().apply {
             background = UIColors.BACKGROUND.asBackground()
-            prefWidth = UIConstants.BASE_DIALOG_WIDTH
-            minHeight = Region.USE_PREF_SIZE
+            prefWidth = Double.MAX_VALUE
+            prefHeight = 0.0
             spacing = UIConstants.BASE_SPACING
             padding = UIConstants.BASE_INSETS
 
@@ -73,12 +68,10 @@ class SettingsStage : Stage() {
 
         Preferences.instance.downloadOutputMode.bindBidirectional(outputModeSpinner.valueFactory.valueProperty())
         Preferences.instance.keepScreenOnTop.bindBidirectional(keepScreenOnButton.isOn)
+        keepScreenOnButton.isOn.addListener { _, _, newValue -> isAlwaysOnTop = newValue }
 
-        keepScreenOnButton.isOn.addListener { _, _, newValue ->
-            isAlwaysOnTop = newValue
-        }
-
-        scene = Scene(Group(root))
+        scene = Scene(root)
+        width = UIConstants.BASE_DIALOG_WIDTH
     }
 
     override fun close() {

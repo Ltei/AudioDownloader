@@ -15,7 +15,6 @@ class ContinuousTask(
         if (deltaTime >= cooldown) {
             val delay = deltaTime - cooldown
             timer.schedule(TaskImpl(), delay)
-            lastRunTime = currentTime + delay
         }
     }
 
@@ -25,6 +24,7 @@ class ContinuousTask(
 
     private inner class TaskImpl : TimerTask() {
         override fun run() {
+            notifyTaskRun()
             block()
         }
     }

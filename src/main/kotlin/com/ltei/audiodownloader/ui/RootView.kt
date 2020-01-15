@@ -10,15 +10,15 @@ import com.ltei.audiodownloader.model.Model
 import com.ltei.audiodownloader.model.Preferences
 import com.ltei.audiodownloader.model.audiosource.AudioSourceUrl
 import com.ltei.audiodownloader.service.AudioDownloadService
-import com.ltei.audiodownloader.ui.view.base.BaseButton
-import com.ltei.audiodownloader.ui.view.base.BaseLabel
-import com.ltei.audiodownloader.ui.view.OutputDirectoryView
-import com.ltei.audiodownloader.ui.view.ovh.AudioDownloadListView
 import com.ltei.audiodownloader.ui.res.UIColors
 import com.ltei.audiodownloader.ui.res.UIConstants
 import com.ltei.audiodownloader.ui.res.UIStylizer
 import com.ltei.audiodownloader.ui.stage.CreateDownloadStage
 import com.ltei.audiodownloader.ui.stage.SettingsStage
+import com.ltei.audiodownloader.ui.view.OutputDirectoryView
+import com.ltei.audiodownloader.ui.view.base.BaseButton
+import com.ltei.audiodownloader.ui.view.base.BaseLabel
+import com.ltei.audiodownloader.ui.view.ovh.AudioDownloadListView
 import javafx.application.Platform
 import javafx.event.EventHandler
 import javafx.scene.control.ProgressIndicator
@@ -31,7 +31,6 @@ import tornadofx.View
 import tornadofx.asBackground
 import tornadofx.stackpane
 import tornadofx.vbox
-import java.io.File
 import kotlin.concurrent.thread
 
 
@@ -39,10 +38,10 @@ class RootView : View(), AudioDownloadService.Listener {
 
     private val logger = Logger(RootView::class.java)
 
+    private val outputDirectoryView = OutputDirectoryView()
+
     private val audioSourceUrlField = TextField("https://www.youtube.com/watch?v=LwVXkM_YxMg")
     private val sourceLabel = BaseLabel("Source : YouTube")
-
-    private val outputDirectoryView = OutputDirectoryView()
 
     private val downloadButton = BaseButton("Download", onMouseClicked = EventHandler {
         val url = audioSourceUrlField.text
@@ -58,14 +57,11 @@ class RootView : View(), AudioDownloadService.Listener {
         background = UIColors.BACKGROUND.asBackground()
         prefWidth = UIConstants.ROOT_WIDTH
         prefHeight = UIConstants.ROOT_HEIGHT
-        //spacing = UIConstants.BASE_SPACING
 
         // Toolbar
         vbox {
-            background = UIColors.PRIMARY_DARK.asBackground()
+            background = UIColors.RED.asBackground()
             prefWidth = Double.MAX_VALUE
-            minHeight = 30.0
-            prefHeight = 30.0
 
             add(BaseButton("Settings", onMouseClicked = EventHandler {
                 val dialog = SettingsStage()
@@ -83,8 +79,9 @@ class RootView : View(), AudioDownloadService.Listener {
                 spacing = UIConstants.BASE_SPACING
                 padding = UIConstants.BASE_INSETS
 
-                // Output directory
-                add(outputDirectoryView)
+                add(outputDirectoryView.apply {
+                    UIStylizer.setupCardLayout(this)
+                })
 
                 // Audio Source
                 vbox {
@@ -158,23 +155,24 @@ class RootView : View(), AudioDownloadService.Listener {
                 val dialog = CreateDownloadStage(title, info.metadata)
                 dialog.initOwner(primaryStage)
                 dialog.showAndWait()
-                val result = dialog.getResult()
+                val result = dialog.result
                 if (result != null) {
                     if (result.fileName.isNotBlank()) {
                         if (Preferences.instance.storeAudioInfo.value) {
-                            val infoFile = File(
-                                Preferences.instance.outputDirectory.value,
-                                "${result.fileName} (Info).json"
+                            val infoFile = Preferences.instance.downloadOutputMode.value.getInfoFile(
+                                outputDirectory = Preferences.instance.outputDirectory.value,
+                                fileName = result.fileName
                             )
                             val infoJson = Globals.persistenceGson.toJson(info)
                             infoFile.writeText(infoJson)
                         }
 
-                        val file = File(
-                            Preferences.instance.outputDirectory.value,
-                            "${result.fileName}.${info.format}"
+                        val audioFile = Preferences.instance.downloadOutputMode.value.getAudioFile(
+                            outputDirectory = Preferences.instance.outputDirectory.value,
+                            fileName = result.fileName,
+                            extension = info.format
                         )
-                        val audioDownload = AudioDownload(audioUrl, file)
+                        val audioDownload = AudioDownload(audioUrl, audioFile)
                         synchronized(Model.instance.audioDownloads) {
                             Model.instance.audioDownloads.add(0, audioDownload)
                         }
