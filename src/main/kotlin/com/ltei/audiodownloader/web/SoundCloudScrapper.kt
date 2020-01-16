@@ -8,7 +8,7 @@ object SoundCloudScrapper {
 
     data class AudioInfo(val title: String, val artist: String)
     fun getAudioInfo(audioUrl: String): AudioInfo? {
-        val document = Jsoup.connect(audioUrl).get()
+        val document = Jsoup.connect(audioUrl).timeout(15000) .get()
         val title = document.title()
         println(title)
         val result = audioTitleRegex.find(title)

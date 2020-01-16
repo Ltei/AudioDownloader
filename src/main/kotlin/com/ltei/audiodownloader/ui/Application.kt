@@ -23,29 +23,29 @@ class Application : javafx.application.Application() {
 //        SystemUtils.setProxy("193.56.47.8", "8080")
 
         mTimer = Timer()
-
         NewPipe.init(DownloaderImpl)
-
         Runtime.getRuntime().addShutdownHook(ShutdownHook())
 
-        // Size
-        stage.width = UIConstants.ROOT_WIDTH
-        stage.height = UIConstants.ROOT_HEIGHT
-        // Position
-        val sb = Screen.getPrimary().visualBounds
-        stage.x = sb.minX + (sb.width - UIConstants.ROOT_WIDTH)
-        stage.y = sb.minY + (sb.height - UIConstants.ROOT_HEIGHT) / 2
-        // Start
-        stage.titleProperty().unbind()
-        stage.titleProperty().value = "AudioDownloader"
+        RootStage().show()
 
-        stage.isAlwaysOnTop = Preferences.instance.keepScreenOnTop.value
-        Preferences.instance.keepScreenOnTop.addListener { _, _, newValue ->
-            stage.isAlwaysOnTop = newValue
-        }
-
-        stage.scene = Scene(RootView(stage))
-        stage.show()
+//        // Size
+//        stage.width = UIConstants.ROOT_WIDTH
+//        stage.height = UIConstants.ROOT_HEIGHT
+//        // Position
+//        val sb = Screen.getPrimary().visualBounds
+//        stage.x = sb.minX + (sb.width - UIConstants.ROOT_WIDTH)
+//        stage.y = sb.minY + (sb.height - UIConstants.ROOT_HEIGHT) / 2
+//        // Start
+//        stage.titleProperty().unbind()
+//        stage.titleProperty().value = "AudioDownloader"
+//
+//        stage.isAlwaysOnTop = Preferences.instance.keepScreenOnTop.value
+//        Preferences.instance.keepScreenOnTop.addListener { _, _, newValue ->
+//            stage.isAlwaysOnTop = newValue
+//        }
+//
+//        stage.scene = Scene(RootView(stage))
+//        stage.show()
     }
 
     override fun stop() {
