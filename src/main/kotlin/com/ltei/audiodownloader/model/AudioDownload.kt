@@ -12,9 +12,13 @@ data class AudioDownload(
     sealed class State(val name: String) {
         object Waiting: State("Waiting")
         object Starting: State("Starting")
-        class InProgress(var progress: Long, var total: Long): State("InProgress")
+        class InProgress(var progress: Long, var total: Long): State("InProgress") {
+            override fun toString(): String = "$name($progress/$total, ${progress.toFloat()/total})"
+        }
         object Finished: State("Finished")
         object Canceled: State("Canceled")
+
+        override fun toString(): String = name
     }
 
 }

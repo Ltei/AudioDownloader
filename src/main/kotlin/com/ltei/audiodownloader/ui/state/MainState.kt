@@ -61,7 +61,8 @@ class MainState : State, AudioDownloadService.Listener {
     private var currentDownload: AudioDownload? = null
     private var audioDownloadListUpdateTask = RecurrentTask(Application.timer, 100L) {
         currentDownload?.let {
-            audioDownloadListView.findCell(it)?.updateViewOnStateChanged()
+            logger.debug("audioDownloadListUpdateTask running (${it.state})")
+            audioDownloadListView.updateViewFromObject()
         }
     }
 
@@ -194,7 +195,7 @@ class MainState : State, AudioDownloadService.Listener {
 
     private fun setLoadingState(isLoading: Boolean) {
         settingsButton.isDisable = isLoading
-        outputDirectoryView.setDisabledState(isLoading)
+        outputDirectoryView.isInputBlocked = isLoading
         audioSourceUrlField.isDisable = isLoading
         downloadButton.isDisable = isLoading
         loadingView.isVisible = isLoading

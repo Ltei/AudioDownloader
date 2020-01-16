@@ -123,6 +123,8 @@ class CreateDownloadStage(
     }
 
     private fun setLoadingState(isLoading: Boolean) {
+        fileNameField.isDisable = isLoading
+        metadataView.isInputBlocked = isLoading
         autofillMetadataButton.isDisable = isLoading
         storeInfoToggleButton.isDisable = isLoading
         downloadButton.isDisable = isLoading

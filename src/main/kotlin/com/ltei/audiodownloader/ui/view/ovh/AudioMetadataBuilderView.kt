@@ -3,6 +3,7 @@ package com.ltei.audiodownloader.ui.view.ovh
 import com.ltei.audiodownloader.model.AudioMetadata
 import com.ltei.audiodownloader.ui.res.UIConstants
 import com.ltei.audiodownloader.ui.view.base.BaseLabel
+import com.ltei.audiodownloader.ui.view.base.InputBlockableView
 import com.ltei.audiodownloader.ui.view.base.JodaDatePicker
 import com.ltei.audiodownloader.ui.view.base.TextListField
 import javafx.scene.Node
@@ -10,7 +11,17 @@ import javafx.scene.control.TextField
 import javafx.scene.layout.VBox
 
 class AudioMetadataBuilderView(override var boundObject: AudioMetadata? = null) : VBox(),
-    ObjectBuilderViewHolder<AudioMetadata> {
+    ObjectBuilderViewHolder<AudioMetadata>, InputBlockableView {
+
+    override var isInputBlocked: Boolean = false
+        set(value) {
+            field = value
+            titleView.isDisable = value
+            artistsView.isDisable = value
+            albumView.isDisable = value
+            releaseDateView.isDisable = value
+            tagsView.isDisable = value
+        }
 
     override val rootNode: Node get() = this
 
