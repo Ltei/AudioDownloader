@@ -6,12 +6,16 @@ import java.util.concurrent.*
 
 object RunnerService {
 
-    fun handle(t: Throwable) {
+    fun runOnUiThread(block: () -> Unit) {
         if (Platform.isFxApplicationThread()) {
-            handleOnUI(t)
+            block()
         } else {
-            Platform.runLater { handleOnUI(t) }
+            Platform.runLater(block)
         }
+    }
+
+    fun handle(t: Throwable) {
+        runOnUiThread { handleOnUI(t) }
     }
 
     private fun handleOnUI(t: Throwable) {
