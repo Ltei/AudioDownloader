@@ -36,10 +36,14 @@ object AudioDownloadService {
     }
 
     private class DownloadThread(val download: AudioDownload) : Thread() {
+
+        private val logger = Logger(DownloadThread::class.java)
+
         var isKilled = false
             private set
 
         override fun run() {
+            logger.debug("Starting...")
             download.state = AudioDownload.State.Starting
             listeners.forEach { it.onDownloadUpdate(download) }
             val progressState = AudioDownload.State.InProgress(-1, -1)
@@ -62,6 +66,7 @@ object AudioDownloadService {
             isKilled = true
             listeners.forEach { it.onDownloadUpdate(download) }
             listeners.forEach { it.onDownloadUpdate(null) }
+            logger.debug("Finishing...")
             AudioDownloadService.start()
         }
 

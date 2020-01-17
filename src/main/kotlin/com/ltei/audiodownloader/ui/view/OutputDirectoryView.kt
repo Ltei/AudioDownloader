@@ -7,6 +7,7 @@ import com.ltei.audiodownloader.ui.view.base.BaseButton
 import com.ltei.audiodownloader.ui.view.base.BaseLabel
 import com.ltei.audiodownloader.ui.res.UIConstants
 import com.ltei.audiodownloader.ui.res.UIStylizer
+import com.ltei.audiodownloader.ui.view.base.InputBlockableView
 import javafx.event.EventHandler
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
@@ -14,7 +15,14 @@ import javafx.scene.layout.VBox
 import javafx.stage.DirectoryChooser
 import java.awt.Desktop
 
-class OutputDirectoryView : VBox() {
+class OutputDirectoryView : VBox(), InputBlockableView {
+
+    override var isInputBlocked: Boolean = false
+        set(value) {
+            field = value
+            selectButton.isDisable = value
+            openButton.isDisable = value
+        }
 
     private val outputDirectoryLabel = BaseLabel()
 
@@ -60,11 +68,6 @@ class OutputDirectoryView : VBox() {
         outputDirectoryLabel.textProperty().bind(Preferences.instance.outputDirectory.stringBinding(op = {
             "Output directory : ${it?.absolutePath}"
         }))
-    }
-
-    fun setDisabledState(isDisabled: Boolean) {
-        selectButton.isDisable = isDisabled
-        openButton.isDisable = isDisabled
     }
 
 }
