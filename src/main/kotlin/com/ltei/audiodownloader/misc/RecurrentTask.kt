@@ -2,7 +2,6 @@ package com.ltei.audiodownloader.misc
 
 import com.ltei.audiodownloader.misc.debug.Logger
 import java.util.*
-import java.util.concurrent.atomic.AtomicReference
 
 class RecurrentTask(
     private val timer: Timer,
@@ -30,15 +29,12 @@ class RecurrentTask(
         lastRunTime = System.currentTimeMillis()
     }
 
-    private val currentTask: AtomicReference<TaskImpl?> = AtomicReference(null)
     private inner class TaskImpl : TimerTask() {
         var finished = false
         override fun run() {
-            logger.debug("Starting update task")
             notifyTaskRun()
             block()
             finished = true
-            logger.debug("Finishing update task")
         }
     }
 

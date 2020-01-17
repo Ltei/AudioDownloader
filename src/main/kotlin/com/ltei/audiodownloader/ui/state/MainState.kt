@@ -34,8 +34,6 @@ import kotlin.concurrent.thread
 
 class MainState : State, AudioDownloadService.Listener {
 
-    private val logger = Logger(MainState::class.java)
-
     private val settingsButton = BaseButton("Settings", onMouseClicked = EventHandler {
         val dialog = SettingsStage()
         dialog.initOwner(RootStage.instance)
@@ -61,8 +59,7 @@ class MainState : State, AudioDownloadService.Listener {
     private var currentDownload: AudioDownload? = null
     private var audioDownloadListUpdateTask = RecurrentTask(Application.timer, 100L) {
         currentDownload?.let {
-            logger.debug("audioDownloadListUpdateTask running (${it.state})")
-            audioDownloadListView.updateViewFromObject()
+            Platform.runLater { audioDownloadListView.updateViewFromObject() }
         }
     }
 
@@ -106,7 +103,6 @@ class MainState : State, AudioDownloadService.Listener {
                 children.add(audioDownloadListView.apply {
                     VBox.setVgrow(this, Priority.ALWAYS)
                     prefHeight = 0.0
-//            maxHeight = 9999.0
                 })
             })
 
@@ -209,10 +205,18 @@ class MainState : State, AudioDownloadService.Listener {
             if (download.state is AudioDownload.State.InProgress) {
                 audioDownloadListUpdateTask.requestRun()
             } else {
-                audioDownloadListView.findCell(download)?.updateViewOnStateChanged()
-                audioDownloadListUpdateTask.notifyTaskRun()
+                Platform.runLater {
+                    audioDownloadListView.updateViewFromObject()
+                    audioDownloadListUpdateTask.notifyTaskRun()
+                }
             }
         }
+    }
+
+    // Static
+
+    companion object {
+        private val logger = Logger(MainState::class.java)
     }
 
 }

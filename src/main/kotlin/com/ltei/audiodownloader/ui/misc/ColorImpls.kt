@@ -82,5 +82,5 @@ fun Color.applyTo(label: Label) {
 
 fun Color.applyTo(progressBar: ProgressBar) {
     val rgb = "rgb(${(red * 255).roundToInt()}, ${(green * 255).roundToInt()}, ${(blue * 255).roundToInt()})"
-    progressBar.lookup(".bar").style = "-fx-background-color: -fx-box-border, $rgb"
+    progressBar.lookup(".bar")?.style = "-fx-background-color: -fx-box-border, $rgb"
 }

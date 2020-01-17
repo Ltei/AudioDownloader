@@ -1,5 +1,6 @@
 package com.ltei.audiodownloader.ui.view.ovh
 
+import com.ltei.audiodownloader.misc.debug.Logger
 import com.ltei.audiodownloader.model.AudioDownload
 import com.ltei.audiodownloader.ui.view.base.BaseLabel
 import com.ltei.audiodownloader.ui.misc.applyTo
@@ -37,8 +38,6 @@ class AudioDownloadItemView(override var boundObject: AudioDownload? = null) : V
         updateViewFromObject()
     }
 
-//    private var lastPercentText: String? = null
-//    private var lastUpdateTime: Long = 0
     fun updateViewOnStateChanged() {
         val state = boundObject?.state ?: return
 
@@ -48,53 +47,56 @@ class AudioDownloadItemView(override var boundObject: AudioDownload? = null) : V
             val progressText = "%.2f".format(state.progress / 1000f)
             val totalText = "%.2f".format(state.total / 1000f)
             val text = "Download progress : $progressText/$totalText kb ($percentText%)."
-            Platform.runLater {
-                downloadStateLabel.text = text
-                downloadProgressBar.progress = ratio
-                UIColors.TEXT_DARK.applyTo(downloadStateLabel)
-                UIColors.PRIMARY_LIGHT.applyTo(downloadProgressBar)
-            }
+            downloadStateLabel.text = text
+            downloadProgressBar.progress = ratio
+            UIColors.TEXT_DARK.applyTo(downloadStateLabel)
+            UIColors.PRIMARY_LIGHT.applyTo(downloadProgressBar)
         } else {
-            Platform.runLater {
-                when (state) {
-                    is AudioDownload.State.Waiting -> {
-                        downloadStateLabel.text = "Waiting for download"
-                        downloadProgressBar.progress = 0.0
-                        UIColors.TEXT_DARK.applyTo(downloadStateLabel)
-                        UIColors.PRIMARY_LIGHT.applyTo(downloadProgressBar)
-                    }
-                    is AudioDownload.State.Starting -> {
-                        downloadStateLabel.text = "Download starting..."
-                        downloadProgressBar.progress = -1.0
-                        UIColors.TEXT_DARK.applyTo(downloadStateLabel)
-                        UIColors.PRIMARY_LIGHT.applyTo(downloadProgressBar)
-                    }
-                    is AudioDownload.State.Finished -> {
-                        downloadStateLabel.text = "Downloaded"
-                        downloadProgressBar.progress = 1.0
-                        UIColors.TEXT_DARK.applyTo(downloadStateLabel)
-                        UIColors.GREEN.applyTo(downloadProgressBar)
-                    }
-                    is AudioDownload.State.Canceled -> {
-                        downloadStateLabel.text = "Canceled"
-                        downloadProgressBar.progress = 1.0
-                        UIColors.TEXT_DARK.applyTo(downloadStateLabel)
-                        UIColors.RED.applyTo(downloadProgressBar)
-                    }
-                    else -> throw IllegalStateException()
+            when (state) {
+                is AudioDownload.State.Waiting -> {
+                    downloadStateLabel.text = "Waiting for download"
+                    downloadProgressBar.progress = 0.0
+                    UIColors.TEXT_DARK.applyTo(downloadStateLabel)
+                    UIColors.PRIMARY_LIGHT.applyTo(downloadProgressBar)
                 }
+                is AudioDownload.State.Starting -> {
+                    downloadStateLabel.text = "Download starting..."
+                    downloadProgressBar.progress = -1.0
+                    UIColors.TEXT_DARK.applyTo(downloadStateLabel)
+                    UIColors.PRIMARY_LIGHT.applyTo(downloadProgressBar)
+                }
+                is AudioDownload.State.Finished -> {
+                    downloadStateLabel.text = "Downloaded"
+                    downloadProgressBar.progress = 1.0
+                    UIColors.TEXT_DARK.applyTo(downloadStateLabel)
+                    UIColors.GREEN.applyTo(downloadProgressBar)
+                }
+                is AudioDownload.State.Canceled -> {
+                    downloadStateLabel.text = "Canceled"
+                    downloadProgressBar.progress = 1.0
+                    UIColors.TEXT_DARK.applyTo(downloadStateLabel)
+                    UIColors.RED.applyTo(downloadProgressBar)
+                }
+                else -> throw IllegalStateException()
             }
         }
     }
 
     override fun updateViewFromObject() {
-        updateViewOnStateChanged()
         val obj = boundObject
-        Platform.runLater {
-            isVisible = obj != null
-            sourceLabel.text = obj?.source?.toString()
-            fileLabel.text = obj?.outputFile?.absolutePath
+        logger.debug("updateViewFromObject() : Binding [$obj] to [$this]")
+        if (obj == null) {
+            isVisible = false
+        } else {
+            sourceLabel.text = obj.source.toString()
+            fileLabel.text = obj.outputFile.absolutePath
+            updateViewOnStateChanged()
+            isVisible = true
         }
+    }
+
+    companion object {
+        private val logger = Logger(AudioDownloadItemView::class.java)
     }
 
 }

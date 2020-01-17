@@ -9,7 +9,7 @@ interface ObjectViewHolder<T> {
     fun updateViewFromObject()
 }
 
-interface ObjectBuilderViewHolder<T>: ObjectViewHolder<T> {
+interface ObjectBuilderViewHolder<T> : ObjectViewHolder<T> {
     fun updateObjectFromView()
 }
 
@@ -21,8 +21,10 @@ private class ListCellImpl<T>(val objectViewHolder: ObjectViewHolder<T>) : ListC
     }
 
     override fun updateItem(item: T?, empty: Boolean) {
+        super.updateItem(item, empty)
         if (empty && item != null) throw IllegalStateException()
         objectViewHolder.boundObject = item
         objectViewHolder.updateViewFromObject()
     }
+
 }

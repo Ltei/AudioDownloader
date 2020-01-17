@@ -10,7 +10,6 @@ import javafx.scene.control.ListView
 import javafx.scene.control.MenuItem
 import javafx.util.Callback
 import java.awt.Desktop
-import java.util.*
 
 class AudioDownloadListView(
     override var boundObject: List<AudioDownload>? = null
@@ -18,8 +17,6 @@ class AudioDownloadListView(
     ObjectViewHolder<List<AudioDownload>> {
 
     override val rootNode = this
-
-    private val cells = Collections.newSetFromMap(WeakHashMap<AudioDownloadItemView, Boolean>())
 
     init {
         val model = Model.instance
@@ -32,17 +29,19 @@ class AudioDownloadListView(
                     val state = obj.state
                     val items = mutableListOf<MenuItem>()
 
-                    items.add(MenuItem("Delete").apply {
-                        onAction = EventHandler {
-                            synchronized(model.audioDownloads) {
-                                Model.instance.audioDownloads.remove(obj)
-                                if (obj === AudioDownloadService.currentDownload) {
-                                    AudioDownloadService.restart()
+                    if (state is AudioDownload.State.Waiting || state is AudioDownload.State.Starting || state is AudioDownload.State.InProgress) {
+                        items.add(MenuItem("Cancel").apply {
+                            onAction = EventHandler {
+                                synchronized(model.audioDownloads) {
+                                    obj.state = AudioDownload.State.Canceled
+                                    if (obj === AudioDownloadService.currentDownload) {
+                                        AudioDownloadService.restart()
+                                    }
                                 }
+                                updateViewFromObject()
                             }
-                            this@AudioDownloadListView.items = Model.instance.audioDownloads.asObservable()
-                        }
-                    })
+                        })
+                    }
 
                     if (state is AudioDownload.State.Finished || state is AudioDownload.State.Canceled) {
                         items.add(MenuItem("Retry").apply {
@@ -50,8 +49,19 @@ class AudioDownloadListView(
                                 synchronized(model.audioDownloads) {
                                     Model.instance.audioDownloads.add(0, obj.copy(state = AudioDownload.State.Waiting))
                                 }
-                                this@AudioDownloadListView.items = Model.instance.audioDownloads.asObservable()
-                                AudioDownloadService.start()
+                                updateViewFromObject()
+                            }
+                        })
+
+                        items.add(MenuItem("Delete").apply {
+                            onAction = EventHandler {
+                                synchronized(model.audioDownloads) {
+                                    Model.instance.audioDownloads.remove(obj)
+                                    if (obj === AudioDownloadService.currentDownload) {
+                                        AudioDownloadService.restart()
+                                    }
+                                }
+                                updateViewFromObject()
                             }
                         })
                     }
@@ -72,16 +82,13 @@ class AudioDownloadListView(
                 }
             }
             view.prefWidth = 0.0
-            cells.add(view)
             view.toListCell()
         }
     }
 
     override fun updateViewFromObject() {
         val obj = boundObject
-        rootNode.items = boundObject?.asObservable()
+        items = obj?.asObservable()
     }
-
-    fun findCell(item: AudioDownload) = cells.find { it.boundObject === item }
 
 }
