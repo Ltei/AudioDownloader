@@ -1,7 +1,8 @@
-package com.ltei.audiodownloader.ui.stage
+package com.ltei.audiodownloader.ui.state
 
 import com.ltei.audiodownloader.model.DownloadOutputMode
 import com.ltei.audiodownloader.model.Preferences
+import com.ltei.audiodownloader.ui.Application
 import com.ltei.audiodownloader.ui.misc.applyTo
 import com.ltei.audiodownloader.ui.misc.asBackground
 import com.ltei.audiodownloader.ui.misc.asObservable
@@ -12,13 +13,11 @@ import com.ltei.audiodownloader.ui.view.base.BaseButton
 import com.ltei.audiodownloader.ui.view.base.BaseLabel
 import com.ltei.audiodownloader.ui.view.base.BaseToggleButton
 import javafx.event.EventHandler
-import javafx.scene.Scene
 import javafx.scene.control.ChoiceBox
 import javafx.scene.layout.VBox
-import javafx.stage.Stage
 
 
-class SettingsStage : Stage() {
+class SettingsState : State {
 
     private val outputModeChooser = ChoiceBox<DownloadOutputMode>(DownloadOutputMode.values().toList().asObservable())
 
@@ -35,48 +34,42 @@ class SettingsStage : Stage() {
         }
     )
 
-    init {
-        setOnCloseRequest { this@SettingsStage.close() }
-        title = "Settings"
+    override val stateView = VBox().apply {
+        background = UIColors.BACKGROUND.asBackground()
+        prefWidth = Double.MAX_VALUE
+        prefHeight = 0.0
+        spacing = UIConstants.BASE_SPACING
+        padding = UIConstants.BASE_INSETS
 
-        val root = VBox().apply {
-            background = UIColors.BACKGROUND.asBackground()
-            prefWidth = Double.MAX_VALUE
-            prefHeight = 0.0
+
+        children.add(VBox().apply {
+            UIStylizer.setupCardLayout(this)
             spacing = UIConstants.BASE_SPACING
-            padding = UIConstants.BASE_INSETS
 
-
-            children.add(VBox().apply {
-                UIStylizer.setupCardLayout(this)
-                spacing = UIConstants.BASE_SPACING
-
-                children.add(BaseLabel("Download output mode :"))
-                children.add(outputModeChooser.apply {
-                    prefWidth = Double.MAX_VALUE
-                })
+            children.add(BaseLabel("Download output mode :"))
+            children.add(outputModeChooser.apply {
+                prefWidth = Double.MAX_VALUE
             })
+        })
 
-            children.add(keepScreenOnButton)
+        children.add(keepScreenOnButton)
 
-            children.add(BaseButton("OK", onMouseClicked = EventHandler {
-                this@SettingsStage.close()
-            }))
-        }
+        children.add(BaseButton("OK", onMouseClicked = EventHandler {
+            Application.stateManager.popState()
+        }))
+    }
 
+    override fun onResume() {
+        super.onResume()
         outputModeChooser.value = Preferences.instance.downloadOutputMode.value
-
         Preferences.instance.downloadOutputMode.bindBidirectional(outputModeChooser.valueProperty())
         Preferences.instance.keepScreenOnTop.bindBidirectional(keepScreenOnButton.isOn)
-        keepScreenOnButton.isOn.addListener { _, _, newValue -> isAlwaysOnTop = newValue }
-
-        scene = Scene(root)
-        width = UIConstants.BASE_DIALOG_WIDTH
     }
 
-    override fun close() {
+    override fun onPause() {
+        super.onPause()
         Preferences.instance.downloadOutputMode.unbindBidirectional(outputModeChooser.valueProperty())
         Preferences.instance.keepScreenOnTop.unbindBidirectional(keepScreenOnButton.isOn)
-        super.close()
     }
+
 }

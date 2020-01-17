@@ -2,6 +2,7 @@ package com.ltei.audiodownloader.model.audiosource
 
 import com.ltei.audiodownloader.misc.util.transferTo
 import com.ltei.audiodownloader.model.DownloadProgressInterceptor
+import com.ltei.audiodownloader.service.RunnerService
 import org.schabi.newpipe.extractor.stream.StreamInfo
 import java.io.File
 import java.net.URL
@@ -22,11 +23,9 @@ internal object AudioSourceUtils {
             }
         }
         for (stream in streams) {
-            try {
+            RunnerService.runHandling {
                 downloadRawUrlTo(stream.getUrl(), file, interceptor)
                 return
-            } catch (e: Exception) {
-                e.printStackTrace()
             }
         }
         throw IllegalArgumentException()

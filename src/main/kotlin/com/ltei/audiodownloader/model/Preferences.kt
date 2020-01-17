@@ -3,6 +3,7 @@ package com.ltei.audiodownloader.model
 import com.ltei.audiodownloader.Globals
 import com.ltei.audiodownloader.misc.util.fromJson
 import com.ltei.audiodownloader.service.FileService
+import com.ltei.audiodownloader.service.RunnerService
 import javafx.beans.property.BooleanProperty
 import javafx.beans.property.ObjectProperty
 import javafx.beans.property.SimpleBooleanProperty
@@ -24,10 +25,8 @@ class Preferences private constructor(
         val instance: Preferences
             get() {
                 if (mInstance == null && file.exists()) {
-                    try {
+                    RunnerService.runHandling {
                         mInstance = gson.fromJson<Preferences>(file.readText())
-                    } catch (e: Exception) {
-                        e.printStackTrace()
                     }
                 }
 

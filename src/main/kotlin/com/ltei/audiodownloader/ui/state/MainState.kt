@@ -11,13 +11,10 @@ import com.ltei.audiodownloader.model.audiosource.AudioSourceUrl
 import com.ltei.audiodownloader.service.AudioDownloadService
 import com.ltei.audiodownloader.service.RunnerService
 import com.ltei.audiodownloader.ui.Application
-import com.ltei.audiodownloader.ui.RootStage
 import com.ltei.audiodownloader.ui.misc.asBackground
 import com.ltei.audiodownloader.ui.res.UIColors
 import com.ltei.audiodownloader.ui.res.UIConstants
 import com.ltei.audiodownloader.ui.res.UIStylizer
-import com.ltei.audiodownloader.ui.stage.CreateDownloadStage
-import com.ltei.audiodownloader.ui.stage.SettingsStage
 import com.ltei.audiodownloader.ui.view.OutputDirectoryView
 import com.ltei.audiodownloader.ui.view.base.BaseButton
 import com.ltei.audiodownloader.ui.view.base.BaseLabel
@@ -29,16 +26,12 @@ import javafx.scene.control.TextField
 import javafx.scene.layout.Priority
 import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox
-import javafx.stage.Modality
 import kotlin.concurrent.thread
 
 class MainState : State, AudioDownloadService.Listener {
 
     private val settingsButton = BaseButton("Settings", onMouseClicked = EventHandler {
-        val dialog = SettingsStage()
-        dialog.initOwner(RootStage.instance)
-        dialog.initModality(Modality.WINDOW_MODAL)
-        dialog.showAndWait()
+        Application.stateManager.pushState(SettingsState())
     })
 
     private val outputDirectoryView = OutputDirectoryView()
@@ -152,34 +145,33 @@ class MainState : State, AudioDownloadService.Listener {
 
             Platform.runLater {
                 setLoadingState(false)
-                val dialog = CreateDownloadStage(outputFileName, info.metadata)
-                dialog.initOwner(RootStage.instance)
-                dialog.showAndWait()
-                val result = dialog.result
-                if (result != null) {
-                    if (result.fileName.isNotBlank()) {
-                        if (Preferences.instance.storeAudioInfo.value) {
-                            val infoFile = Preferences.instance.downloadOutputMode.value.getInfoFile(
-                                outputDirectory = Preferences.instance.outputDirectory.value,
-                                fileName = result.fileName
-                            )
-                            val infoJson = Globals.persistenceGson.toJson(info)
-                            infoFile.writeText(infoJson)
-                        }
+                val state = CreateDownloadState(outputFileName, info.metadata) { result ->
+                    if (result != null) {
+                        if (result.fileName.isNotBlank()) {
+                            if (Preferences.instance.storeAudioInfo.value) {
+                                val infoFile = Preferences.instance.downloadOutputMode.value.getInfoFile(
+                                    outputDirectory = Preferences.instance.outputDirectory.value,
+                                    fileName = result.fileName
+                                )
+                                val infoJson = Globals.persistenceGson.toJson(info)
+                                infoFile.writeText(infoJson)
+                            }
 
-                        val audioFile = Preferences.instance.downloadOutputMode.value.getAudioFile(
-                            outputDirectory = Preferences.instance.outputDirectory.value,
-                            fileName = result.fileName,
-                            extension = info.format
-                        )
-                        val audioDownload = AudioDownload(audioUrl, audioFile)
-                        synchronized(Model.instance.audioDownloads) {
-                            Model.instance.audioDownloads.add(0, audioDownload)
+                            val audioFile = Preferences.instance.downloadOutputMode.value.getAudioFile(
+                                outputDirectory = Preferences.instance.outputDirectory.value,
+                                fileName = result.fileName,
+                                extension = info.format
+                            )
+                            val audioDownload = AudioDownload(audioUrl, audioFile)
+                            synchronized(Model.instance.audioDownloads) {
+                                Model.instance.audioDownloads.add(0, audioDownload)
+                            }
+                            AudioDownloadService.start()
+                            audioDownloadListView.updateViewFromObject()
                         }
-                        AudioDownloadService.start()
-                        audioDownloadListView.updateViewFromObject()
                     }
                 }
+                Application.stateManager.pushState(state)
             }
         }.setUncaughtExceptionHandler { _, exception ->
             Platform.runLater {

@@ -3,10 +3,11 @@ package com.ltei.audiodownloader.ui.state
 import javafx.scene.layout.Pane
 
 class StateManager(
-    val parent: Pane,
-    val rootState: State
+    private val parent: Pane,
+    rootState: State
 ) {
 
+    val listeners = mutableListOf<Listener>()
     val backStack = mutableListOf(rootState)
 
     init {
@@ -40,7 +41,13 @@ class StateManager(
 
     private fun setShownState(state: State) {
         state.onResume()
+        listeners.forEach { it.onStateResumed(state) }
         parent.children.add(state.stateView)
+    }
+
+
+    interface Listener {
+        fun onStateResumed(state: State)
     }
 
 }

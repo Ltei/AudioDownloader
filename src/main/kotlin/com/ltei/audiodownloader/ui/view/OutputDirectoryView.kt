@@ -1,7 +1,7 @@
 package com.ltei.audiodownloader.ui.view
 
 import com.ltei.audiodownloader.model.Preferences
-import com.ltei.audiodownloader.ui.RootStage
+import com.ltei.audiodownloader.ui.Application
 import com.ltei.audiodownloader.ui.misc.stringBinding
 import com.ltei.audiodownloader.ui.view.base.BaseButton
 import com.ltei.audiodownloader.ui.view.base.BaseLabel
@@ -31,7 +31,7 @@ class OutputDirectoryView : VBox(), InputBlockableView {
         onMouseClicked = EventHandler {
             val chooser = DirectoryChooser()
             chooser.initialDirectory = Preferences.instance.outputDirectory.value
-            val directory = chooser.showDialog(RootStage.instance)
+            val directory = chooser.showDialog(Application.stage)
             if (directory != null && directory.isDirectory) {
                 Preferences.instance.outputDirectory.value = directory
             }

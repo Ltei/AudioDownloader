@@ -3,6 +3,7 @@ package com.ltei.audiodownloader.model
 import com.ltei.audiodownloader.Globals
 import com.ltei.audiodownloader.misc.util.fromJson
 import com.ltei.audiodownloader.service.FileService
+import com.ltei.audiodownloader.service.RunnerService
 
 class Model private constructor(
     val audioDownloads: MutableList<AudioDownload> = mutableListOf()
@@ -16,10 +17,8 @@ class Model private constructor(
         val instance: Model
             get() {
                 if (mInstance == null && file.exists()) {
-                    try {
+                    RunnerService.runHandling {
                         mInstance = gson.fromJson<Model>(file.readText())
-                    } catch (e: Exception) {
-                        e.printStackTrace()
                     }
                 }
 
