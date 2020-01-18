@@ -11,7 +11,7 @@ import javafx.beans.property.SimpleObjectProperty
 import java.io.File
 
 class Preferences private constructor(
-    val outputDirectory: ObjectProperty<File> = SimpleObjectProperty(File(FileService.USER_HOME_DIRECTORY, "Downloads")),
+    val outputDirectory: ObjectProperty<File> = SimpleObjectProperty(FileService.USER_DOWNLOAD_DIRECTORY),
     val keepScreenOnTop: BooleanProperty = SimpleBooleanProperty(false),
     val storeAudioInfo: BooleanProperty = SimpleBooleanProperty(false),
     val downloadOutputMode: ObjectProperty<DownloadOutputMode> = SimpleObjectProperty(DownloadOutputMode.Default)
@@ -39,6 +39,7 @@ class Preferences private constructor(
 
         fun save() {
             mInstance?.let { instance ->
+                file.parentFile.mkdirs()
                 val json = gson.toJson(instance)
                 file.writeText(json)
             }
