@@ -15,7 +15,12 @@ object RunnerService {
     }
 
     fun handle(t: Throwable) {
+        handleOnBack(t)
         runOnUiThread { handleOnUI(t) }
+    }
+
+    fun handleOnBack(t: Throwable) {
+        t.printStackTrace()
     }
 
     private fun handleOnUI(t: Throwable) {
@@ -30,8 +35,15 @@ object RunnerService {
         try {
             block()
         } catch (e: Exception) {
-            e.printStackTrace()
             handle(e)
+        }
+    }
+
+    inline fun runHandlingOnBack(block: () -> Unit) {
+        try {
+            block()
+        } catch (e: Exception) {
+            handleOnBack(e)
         }
     }
 

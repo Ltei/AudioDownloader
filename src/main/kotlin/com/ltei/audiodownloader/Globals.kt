@@ -1,11 +1,6 @@
 package com.ltei.audiodownloader
 
 import com.github.kiulian.downloader.YoutubeDownloader
-import com.github.kiulian.downloader.cipher.CachedCipherFactory
-import com.github.kiulian.downloader.cipher.CipherFactory
-import com.github.kiulian.downloader.extractor.DefaultExtractor
-import com.github.kiulian.downloader.extractor.Extractor
-import com.github.kiulian.downloader.parser.DefaultParser
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.ltei.audiodownloader.model.AudioDownload
@@ -16,12 +11,7 @@ import javafx.beans.property.*
 import java.io.File
 
 object Globals {
-    val youTubeDownloader = run {
-        val extractor = DefaultExtractor()
-        val cipherFactory = CachedCipherFactory(extractor)
-        val parser = DefaultParser(extractor, cipherFactory)
-        YoutubeDownloader()
-    }
+    val youTubeDownloader = YoutubeDownloader()
 
     val persistenceGson = GsonBuilder()
         .registerTypeAdapter(File::class.java, FileAdapter())
@@ -31,11 +21,21 @@ object Globals {
 
         .registerTypeAdapter(object : TypeToken<ObjectProperty<File>>() {}.type, ObjectPropertyAdapter.create<File>())
         .registerTypeAdapter(object : TypeToken<ObjectProperty<DownloadOutputMode>>() {}.type, ObjectPropertyAdapter.create<DownloadOutputMode>())
+
         .registerTypeAdapter(StringProperty::class.java, StringPropertyAdapter())
+        .registerTypeAdapter(SimpleStringProperty::class.java, BooleanPropertyAdapter())
+
         .registerTypeAdapter(BooleanProperty::class.java, BooleanPropertyAdapter())
+        .registerTypeAdapter(SimpleBooleanProperty::class.java, BooleanPropertyAdapter())
+
         .registerTypeAdapter(IntegerProperty::class.java, IntPropertyAdapter())
+        .registerTypeAdapter(SimpleIntegerProperty::class.java, BooleanPropertyAdapter())
+
         .registerTypeAdapter(FloatProperty::class.java, FloatPropertyAdapter())
+        .registerTypeAdapter(SimpleFloatProperty::class.java, BooleanPropertyAdapter())
+
         .registerTypeAdapter(DoubleProperty::class.java, DoublePropertyAdapter())
+        .registerTypeAdapter(SimpleDoubleProperty::class.java, BooleanPropertyAdapter())
 
         .setPrettyPrinting()
         .create()

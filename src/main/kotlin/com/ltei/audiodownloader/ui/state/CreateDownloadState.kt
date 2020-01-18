@@ -16,7 +16,6 @@ import com.ltei.audiodownloader.ui.view.ovh.AudioMetadataBuilderView
 import javafx.application.Platform
 import javafx.event.EventHandler
 import javafx.scene.control.ProgressIndicator
-import javafx.scene.control.ScrollPane
 import javafx.scene.control.TextField
 import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox
@@ -75,38 +74,40 @@ class CreateDownloadState(
             isFitToWidth = true
             isFitToHeight = true
 
-            content =VBox().apply {
+            content = VBox().apply {
                 background = UIColors.BACKGROUND.asBackground()
                 prefWidth = Double.MAX_VALUE
-                padding = UIConstants.BASE_INSETS
-                spacing = UIConstants.BASE_SPACING
 
                 children.add(backButton)
 
                 children.add(VBox().apply {
-                    UIStylizer.setupCardLayout(this)
+                    padding = UIConstants.BASE_INSETS
                     spacing = UIConstants.BASE_SPACING
 
-                    children.add(BaseLabel("Output file name :"))
-                    children.add(fileNameField)
-                })
+                    children.add(VBox().apply {
+                        UIStylizer.setupCardLayout(this)
+                        spacing = UIConstants.BASE_SPACING
 
-                children.add(BaseLabel("Metadata"))
-                children.add(metadataView.apply {
-                    UIStylizer.setupCardLayout(this)
-                    boundObject = audioMetadata
-                    updateViewFromObject()
-                })
+                        children.add(BaseLabel("Output file name :"))
+                        children.add(fileNameField)
+                    })
 
-                children.add(autofillMetadataButton)
-                children.add(storeInfoToggleButton)
-                children.add(downloadButton)
+                    children.add(BaseLabel("Metadata"))
+                    children.add(metadataView.apply {
+                        UIStylizer.setupCardLayout(this)
+                        boundObject = audioMetadata
+                        updateViewFromObject()
+                    })
+
+                    children.add(autofillMetadataButton)
+                    children.add(storeInfoToggleButton)
+                    children.add(downloadButton)
+                })
             }
         })
 
         children.add(loadingView)
     }
-
 
 
     init {

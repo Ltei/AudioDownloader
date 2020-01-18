@@ -39,7 +39,8 @@ class Preferences private constructor(
 
         fun save() {
             mInstance?.let { instance ->
-                file.writeText(gson.toJson(instance))
+                val json = gson.toJson(instance)
+                file.writeText(json)
             }
         }
     }

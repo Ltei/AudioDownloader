@@ -38,25 +38,27 @@ class SettingsState : State {
         background = UIColors.BACKGROUND.asBackground()
         prefWidth = Double.MAX_VALUE
         prefHeight = 0.0
-        spacing = UIConstants.BASE_SPACING
-        padding = UIConstants.BASE_INSETS
 
-
-        children.add(VBox().apply {
-            UIStylizer.setupCardLayout(this)
-            spacing = UIConstants.BASE_SPACING
-
-            children.add(BaseLabel("Download output mode :"))
-            children.add(outputModeChooser.apply {
-                prefWidth = Double.MAX_VALUE
-            })
-        })
-
-        children.add(keepScreenOnButton)
-
-        children.add(BaseButton("OK", onMouseClicked = EventHandler {
+        children.add(BaseButton("Back", EventHandler {
             Application.stateManager.popState()
         }))
+
+        children.add(VBox().apply {
+            padding = UIConstants.BASE_INSETS
+            spacing = UIConstants.BASE_SPACING
+
+            children.add(VBox().apply {
+                UIStylizer.setupCardLayout(this)
+                spacing = UIConstants.BASE_SPACING
+
+                children.add(BaseLabel("Download output mode :"))
+                children.add(outputModeChooser.apply {
+                    prefWidth = Double.MAX_VALUE
+                })
+            })
+
+            children.add(keepScreenOnButton)
+        })
     }
 
     override fun onResume() {

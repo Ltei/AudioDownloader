@@ -27,8 +27,9 @@ class StringPropertyAdapter : JsonSerializer<StringProperty>, JsonDeserializer<S
 }
 
 class BooleanPropertyAdapter : JsonSerializer<BooleanProperty>, JsonDeserializer<BooleanProperty> {
-    override fun serialize(src: BooleanProperty, typeOfSrc: Type, context: JsonSerializationContext): JsonElement =
-        context.serialize(src.value)
+    override fun serialize(src: BooleanProperty, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
+        return context.serialize(src.value)
+    }
 
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): BooleanProperty =
         SimpleBooleanProperty(context.deserialize(json, Boolean::class.java))

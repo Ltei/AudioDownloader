@@ -72,7 +72,7 @@ class Application : javafx.application.Application() {
     }
 
     private fun release() {
-        RunnerService.runHandling {
+        RunnerService.runHandlingOnBack {
             Model.save()
             Preferences.save()
         }
