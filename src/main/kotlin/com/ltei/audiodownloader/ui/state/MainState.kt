@@ -70,6 +70,7 @@ class MainState : State, AudioDownloadService.Listener {
         })
 
         children.add(StackPane().apply {
+            prefHeight = 9999.0
 
             children.add(VBox().apply {
                 prefWidth = UIConstants.ROOT_WIDTH
@@ -95,7 +96,7 @@ class MainState : State, AudioDownloadService.Listener {
 
                 children.add(audioDownloadListView.apply {
                     VBox.setVgrow(this, Priority.ALWAYS)
-                    prefHeight = 0.0
+                    prefHeight = 9999.0
                 })
             })
 

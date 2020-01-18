@@ -33,7 +33,6 @@ class AudioMetadataBuilderView(override var boundObject: AudioMetadata? = null) 
     private val tagsView = TextListField()
 
     init {
-        padding = UIConstants.BASE_INSETS
         spacing = UIConstants.BASE_SPACING
 
         children.add(BaseLabel("Title :"))

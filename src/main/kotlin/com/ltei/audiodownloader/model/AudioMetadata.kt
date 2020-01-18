@@ -38,21 +38,23 @@ data class AudioMetadata(
         }
 
         // Spotify metadata
-//        try {
-//            title?.let { currentMetadataTitle ->
-//                val searchQuery = StringBuilder(currentMetadataTitle)
-//                artists?.let { artists ->
-//                    for (artist in artists) searchQuery.append(' ').append(artist)
-//                }
-//                val track = SpotifyClient.searchTrack(searchQuery.toString()).firstOrNull()
-//                if (track != null) {
-//                    if (!artists.hasNonBlankString()) artists = track.artists?.map { it.name }
-//                    if (album.isNullOrBlank()) album = track.album?.name
-//                }
-//            }
-//        } catch (e: Exception) {
-//            IllegalStateException("Error while trying to get info from Spotify", e).printStackTrace()
-//        }
+        try {
+            val title = title
+            val spotifyClient = SpotifyClient.instance
+            if (title != null && spotifyClient != null) {
+                val searchQuery = StringBuilder(title)
+                artists?.let { artists ->
+                    for (artist in artists) searchQuery.append(' ').append(artist)
+                }
+                val track = spotifyClient.searchTrack(searchQuery.toString()).firstOrNull()
+                if (track != null) {
+                    if (!artists.hasNonBlankString()) artists = track.artists?.map { it.name }
+                    if (album.isNullOrBlank()) album = track.album?.name
+                }
+            }
+        } catch (e: Exception) {
+            IllegalStateException("Error while trying to get info from Spotify", e).printStackTrace()
+        }
 
         // LastFm metadata
         try {

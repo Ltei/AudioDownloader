@@ -16,12 +16,15 @@ import javafx.stage.Screen
 import javafx.stage.Stage
 import org.schabi.newpipe.extractor.NewPipe
 import java.util.*
+import java.util.concurrent.atomic.AtomicBoolean
 
 class Application : javafx.application.Application() {
 
     private var mTimer: Timer? = null
     private var mStage: Stage? = null
     private var mStateManager: StateManager? = null
+
+    private var releaseCalled = AtomicBoolean(false)
 
     init {
         mInstance = this
@@ -72,13 +75,16 @@ class Application : javafx.application.Application() {
     }
 
     private fun release() {
-        RunnerService.runHandlingOnBack {
-            Model.save()
-            Preferences.save()
+        if (!releaseCalled.getAndSet(true)) {
+            RunnerService.runHandlingOnBack {
+                Model.save()
+                Preferences.save()
+            }
+            AudioDownloadService.stop()
+            mTimer?.cancel()
+            mTimer = null
+            mStateManager?.backStack?.lastOrNull()?.onPause()
         }
-        AudioDownloadService.stop()
-        mTimer?.cancel()
-        mTimer = null
     }
 
     private class ShutdownHook : Thread() {

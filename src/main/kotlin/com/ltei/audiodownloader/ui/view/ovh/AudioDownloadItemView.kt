@@ -2,12 +2,11 @@ package com.ltei.audiodownloader.ui.view.ovh
 
 import com.ltei.audiodownloader.misc.debug.Logger
 import com.ltei.audiodownloader.model.AudioDownload
-import com.ltei.audiodownloader.ui.view.base.BaseLabel
 import com.ltei.audiodownloader.ui.misc.applyTo
 import com.ltei.audiodownloader.ui.res.UIColors
 import com.ltei.audiodownloader.ui.res.UIConstants
 import com.ltei.audiodownloader.ui.res.UIStylizer
-import javafx.application.Platform
+import com.ltei.audiodownloader.ui.view.base.BaseLabel
 import javafx.scene.control.ProgressBar
 import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox
@@ -84,7 +83,6 @@ class AudioDownloadItemView(override var boundObject: AudioDownload? = null) : V
 
     override fun updateViewFromObject() {
         val obj = boundObject
-        logger.debug("updateViewFromObject() : Binding [$obj] to [$this]")
         if (obj == null) {
             isVisible = false
         } else {

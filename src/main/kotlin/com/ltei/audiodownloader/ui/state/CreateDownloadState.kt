@@ -37,7 +37,7 @@ class CreateDownloadState(
 
     private val metadataView = AudioMetadataBuilderView()
 
-    private val autofillMetadataButton = BaseButton("Autofill Metadata", onMouseClicked = EventHandler {
+    private val autofillMetadataButton = BaseButton("Autofill", onMouseClicked = EventHandler {
         setLoadingState(true)
         thread {
             metadataView.boundObject?.autofill()
@@ -47,6 +47,13 @@ class CreateDownloadState(
             }
         }
     })
+
+    private val metadataLayout = VBox().apply {
+        children.addAll(
+            metadataView,
+            autofillMetadataButton
+        )
+    }
 
     private val storeInfoToggleButton = BaseToggleButton(
         isOn = Preferences.instance.storeAudioInfo.value,
@@ -92,15 +99,13 @@ class CreateDownloadState(
                         children.add(fileNameField)
                     })
 
-                    children.add(BaseLabel("Metadata"))
-                    children.add(metadataView.apply {
+                    children.add(storeInfoToggleButton)
+
+                    children.add(metadataLayout.apply {
                         UIStylizer.setupCardLayout(this)
-                        boundObject = audioMetadata
-                        updateViewFromObject()
+                        spacing = UIConstants.BASE_SPACING
                     })
 
-                    children.add(autofillMetadataButton)
-                    children.add(storeInfoToggleButton)
                     children.add(downloadButton)
                 })
             }
@@ -112,6 +117,9 @@ class CreateDownloadState(
 
     init {
         setLoadingState(false)
+
+        metadataView.boundObject = audioMetadata
+        metadataView.updateViewFromObject()
     }
 
     // State
@@ -119,11 +127,15 @@ class CreateDownloadState(
     override fun onResume() {
         super.onResume()
         Preferences.instance.storeAudioInfo.bindBidirectional(storeInfoToggleButton.isOn)
+        metadataLayout.visibleProperty().bind(Preferences.instance.storeAudioInfo)
+        metadataLayout.managedProperty().bind(Preferences.instance.storeAudioInfo)
     }
 
     override fun onPause() {
         super.onPause()
         Preferences.instance.storeAudioInfo.unbindBidirectional(storeInfoToggleButton.isOn)
+        metadataLayout.visibleProperty().unbind()
+        metadataLayout.managedProperty().unbind()
     }
 
     // Private misc

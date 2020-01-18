@@ -11,14 +11,14 @@ import javafx.beans.property.SimpleObjectProperty
 import java.io.File
 
 class Preferences private constructor(
-    val outputDirectory: ObjectProperty<File> = SimpleObjectProperty(File(System.getProperty("user.home"), "Downloads")),
+    val outputDirectory: ObjectProperty<File> = SimpleObjectProperty(File(FileService.USER_HOME_DIRECTORY, "Downloads")),
     val keepScreenOnTop: BooleanProperty = SimpleBooleanProperty(false),
     val storeAudioInfo: BooleanProperty = SimpleBooleanProperty(false),
     val downloadOutputMode: ObjectProperty<DownloadOutputMode> = SimpleObjectProperty(DownloadOutputMode.Default)
 ) {
 
     companion object {
-        private val file = FileService.getOutputFile("preferences.json")
+        private val file = FileService.getPersistenceFile("preferences.json")
         private val gson = Globals.persistenceGson
 
         private var mInstance: Preferences? = null

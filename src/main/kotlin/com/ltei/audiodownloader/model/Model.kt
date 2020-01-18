@@ -10,7 +10,7 @@ class Model private constructor(
 ) {
 
     companion object {
-        private val file = FileService.getOutputFile("model.json")
+        private val file = FileService.getPersistenceFile("model.json")
         private val gson = Globals.persistenceGson
 
         private var mInstance: Model? = null
