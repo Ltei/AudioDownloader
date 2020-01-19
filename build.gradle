@@ -3,6 +3,9 @@ buildscript {
 //    ext.tornadofx_version = "1.7.17"
     ext.junit_version = "5.1.0"
 
+    ext.kotlin_compile_path = "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    ext.gson_compile_path = 'com.google.code.gson:gson:2.8.6'
+
     repositories {
         jcenter()
         mavenLocal()
@@ -31,10 +34,13 @@ apply plugin: "org.junit.platform.gradle.plugin"
 apply plugin: 'com.github.johnrengelman.shadow'
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation kotlin_compile_path
+    implementation gson_compile_path
 
-    // TornadoFX
-//    implementation 'no.tornado:tornadofx:1.7.19'
+    implementation project(":lteijfxutils")
+    implementation project(":ljubase")
+    implementation project(":ljuutils")
+    implementation project(":ljugson")
 
     // YouTube
     implementation 'com.google.apis:google-api-services-youtube:v3-rev182-1.22.0'
@@ -55,9 +61,6 @@ dependencies {
     implementation 'com.github.TeamNewPipe:NewPipeExtractor:v0.18.0'
     // YouTube Downloader (Best YouTube scrapping library ever)
     implementation 'com.github.sealedtx:java-youtube-downloader:2.0.1'
-
-    // Gson
-    implementation 'com.google.code.gson:gson:2.8.6'
 
     // OkHttp
     implementation "com.squareup.okhttp3:okhttp:4.3.1"

@@ -1,9 +1,11 @@
-package com.ltei.audiodownloader.ui.view.ovh
+package com.ltei.audiodownloader.ui.ovh
 
 import com.ltei.audiodownloader.model.AudioDownload
 import com.ltei.audiodownloader.model.Model
 import com.ltei.audiodownloader.service.AudioDownloadService
-import com.ltei.audiodownloader.ui.misc.asObservable
+import com.ltei.lteijfxutils.misc.ObjectViewHolder
+import com.ltei.lteijfxutils.misc.toListCell
+import com.ltei.lteijfxutils.utils.asObservable
 import javafx.event.EventHandler
 import javafx.scene.control.ContextMenu
 import javafx.scene.control.ListView

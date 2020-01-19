@@ -1,4 +1,4 @@
-package com.ltei.audiodownloader.misc.util
+package com.ltei.audiodownloader.misc
 
 import com.ltei.audiodownloader.model.DownloadProgressInterceptor
 import java.io.InputStream

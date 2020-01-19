@@ -2,8 +2,6 @@ package com.ltei.audiodownloader.ui.state
 
 import com.ltei.audiodownloader.Globals
 import com.ltei.audiodownloader.misc.RecurrentTask
-import com.ltei.audiodownloader.misc.debug.Logger
-import com.ltei.audiodownloader.misc.util.ListUtils
 import com.ltei.audiodownloader.model.AudioDownload
 import com.ltei.audiodownloader.model.Model
 import com.ltei.audiodownloader.model.Preferences
@@ -11,14 +9,17 @@ import com.ltei.audiodownloader.model.audiosource.AudioSourceUrl
 import com.ltei.audiodownloader.service.AudioDownloadService
 import com.ltei.audiodownloader.service.RunnerService
 import com.ltei.audiodownloader.ui.Application
-import com.ltei.audiodownloader.ui.misc.asBackground
-import com.ltei.audiodownloader.ui.res.UIColors
-import com.ltei.audiodownloader.ui.res.UIConstants
-import com.ltei.audiodownloader.ui.res.UIStylizer
+import com.ltei.audiodownloader.ui.UIColors
+import com.ltei.audiodownloader.ui.UIConstants
+import com.ltei.audiodownloader.ui.UIStylizer
+import com.ltei.audiodownloader.ui.ovh.AudioDownloadListView
 import com.ltei.audiodownloader.ui.view.OutputDirectoryView
-import com.ltei.audiodownloader.ui.view.base.BaseButton
-import com.ltei.audiodownloader.ui.view.base.BaseLabel
-import com.ltei.audiodownloader.ui.view.ovh.AudioDownloadListView
+import com.ltei.ljubase.debug.Logger
+import com.ltei.ljuutils.utils.ListUtils
+import com.ltei.lteijfxutils.state.State
+import com.ltei.lteijfxutils.utils.asBackground
+import com.ltei.lteijfxutils.view.BaseButton
+import com.ltei.lteijfxutils.view.BaseLabel
 import javafx.application.Platform
 import javafx.event.EventHandler
 import javafx.scene.control.ProgressIndicator

@@ -1,11 +1,11 @@
 package com.ltei.audiodownloader.model
 
-import com.ltei.audiodownloader.misc.debug.Logger
-import com.ltei.audiodownloader.misc.util.FileUtils
-import com.ltei.audiodownloader.misc.util.ListUtils
-import com.ltei.audiodownloader.misc.util.hasNonBlankString
+import com.ltei.ljubase.debug.Logger
 import com.ltei.audiodownloader.web.LastFmClient
 import com.ltei.audiodownloader.web.SpotifyClient
+import com.ltei.ljuutils.utils.FileUtils
+import com.ltei.ljuutils.utils.ListUtils
+import com.ltei.ljuutils.utils.hasNonBlankString
 import com.mpatric.mp3agic.Mp3File
 import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat

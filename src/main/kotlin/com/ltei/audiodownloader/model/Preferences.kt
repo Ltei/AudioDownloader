@@ -1,9 +1,9 @@
 package com.ltei.audiodownloader.model
 
 import com.ltei.audiodownloader.Globals
-import com.ltei.audiodownloader.misc.util.fromJson
 import com.ltei.audiodownloader.service.FileService
 import com.ltei.audiodownloader.service.RunnerService
+import com.ltei.ljugson.fromJson
 import javafx.beans.property.BooleanProperty
 import javafx.beans.property.ObjectProperty
 import javafx.beans.property.SimpleBooleanProperty

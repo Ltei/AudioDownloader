@@ -1,2 +1,13 @@
 rootProject.name = 'AudioDownloader'
 
+def includeLjuProject(String name) {
+    include(':' + name)
+    project(':' + name).projectDir = new File("C:\\Home\\Workspaces\\LteiUtils\\LteiJavaUtils\\" + name)
+}
+
+include(':lteijfxutils')
+project(':lteijfxutils').projectDir = new File("C:\\Home\\Workspaces\\LteiUtils\\LteiJfxUtils\\lteijfxutils")
+
+includeLjuProject("ljubase")
+includeLjuProject("ljuutils")
+includeLjuProject("ljugson")

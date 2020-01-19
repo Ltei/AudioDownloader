@@ -1,4 +1,4 @@
-package com.ltei.audiodownloader.ui.view.base
+package com.ltei.audiodownloader.ui.view
 
 import javafx.scene.control.DatePicker
 import org.joda.time.LocalDate

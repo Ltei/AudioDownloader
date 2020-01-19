@@ -1,6 +1,6 @@
 package com.ltei.audiodownloader.service
 
-import com.ltei.audiodownloader.misc.debug.Logger
+import com.ltei.ljubase.debug.Logger
 import com.ltei.audiodownloader.model.AudioDownload
 import com.ltei.audiodownloader.model.DownloadProgressInterceptor
 import com.ltei.audiodownloader.model.Model

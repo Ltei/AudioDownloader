@@ -1,12 +1,13 @@
-package com.ltei.audiodownloader.ui.view.ovh
+package com.ltei.audiodownloader.ui.ovh
 
-import com.ltei.audiodownloader.misc.debug.Logger
+import com.ltei.ljubase.debug.Logger
 import com.ltei.audiodownloader.model.AudioDownload
-import com.ltei.audiodownloader.ui.misc.applyTo
-import com.ltei.audiodownloader.ui.res.UIColors
-import com.ltei.audiodownloader.ui.res.UIConstants
-import com.ltei.audiodownloader.ui.res.UIStylizer
-import com.ltei.audiodownloader.ui.view.base.BaseLabel
+import com.ltei.audiodownloader.ui.UIColors
+import com.ltei.audiodownloader.ui.UIConstants
+import com.ltei.audiodownloader.ui.UIStylizer
+import com.ltei.lteijfxutils.misc.ObjectViewHolder
+import com.ltei.lteijfxutils.utils.applyTo
+import com.ltei.lteijfxutils.view.BaseLabel
 import javafx.scene.control.ProgressBar
 import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox

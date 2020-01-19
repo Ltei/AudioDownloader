@@ -5,9 +5,9 @@ import com.ltei.audiodownloader.model.Model
 import com.ltei.audiodownloader.model.Preferences
 import com.ltei.audiodownloader.service.AudioDownloadService
 import com.ltei.audiodownloader.service.RunnerService
-import com.ltei.audiodownloader.ui.res.UIConstants
 import com.ltei.audiodownloader.ui.state.MainState
-import com.ltei.audiodownloader.ui.state.StateManager
+import com.ltei.lteijfxutils.res.BaseResources
+import com.ltei.lteijfxutils.state.StateManager
 import javafx.application.Platform
 import javafx.event.EventHandler
 import javafx.scene.Scene
@@ -31,37 +31,44 @@ class Application : javafx.application.Application() {
     }
 
     override fun start(stage: Stage) {
-        // Init
+        RunnerService.runHandling {
+            // Init
 //        SystemUtils.setProxy("193.56.47.8", "8080")
-        NewPipe.init(DownloaderImpl)
-        Runtime.getRuntime().addShutdownHook(ShutdownHook())
+            NewPipe.init(DownloaderImpl)
+            Runtime.getRuntime().addShutdownHook(ShutdownHook())
+            BaseResources.init(
+                UIColors,
+                UIConstants,
+                UIStylizer
+            )
 
-        // Setup stage
-        stage.onCloseRequest = EventHandler { exit() }
+            // Setup stage
+            stage.onCloseRequest = EventHandler { exit() }
 
-        stage.width = UIConstants.ROOT_WIDTH
-        stage.height = UIConstants.ROOT_HEIGHT
+            stage.width = UIConstants.ROOT_WIDTH
+            stage.height = UIConstants.ROOT_HEIGHT
 
-        val sb = Screen.getPrimary().visualBounds
-        stage.x = sb.minX + (sb.width - UIConstants.ROOT_WIDTH)
-        stage.y = sb.minY + (sb.height - UIConstants.ROOT_HEIGHT) / 2
+            val sb = Screen.getPrimary().visualBounds
+            stage.x = sb.minX + (sb.width - UIConstants.ROOT_WIDTH)
+            stage.y = sb.minY + (sb.height - UIConstants.ROOT_HEIGHT) / 2
 
-        stage.titleProperty().unbind()
-        stage.titleProperty().value = "AudioDownloader"
+            stage.titleProperty().unbind()
+            stage.titleProperty().value = "AudioDownloader"
 
-        stage.isAlwaysOnTop = Preferences.instance.keepScreenOnTop.value
-        Preferences.instance.keepScreenOnTop.addListener { _, _, newValue -> stage.isAlwaysOnTop = newValue }
+            stage.isAlwaysOnTop = Preferences.instance.keepScreenOnTop.value
+            Preferences.instance.keepScreenOnTop.addListener { _, _, newValue -> stage.isAlwaysOnTop = newValue }
 
-        // Setup app
-        val statePane = StackPane()
-        val rootView = statePane
-        mTimer = Timer()
-        mStage = stage
-        mStateManager = StateManager(statePane, MainState())
+            // Setup app
+            val statePane = StackPane()
+            val rootView = statePane
+            mTimer = Timer()
+            mStage = stage
+            mStateManager = StateManager(statePane, MainState())
 
-        // Start
-        stage.scene = Scene(rootView)
-        stage.show()
+            // Start
+            stage.scene = Scene(rootView)
+            stage.show()
+        }
     }
 
     override fun stop() {

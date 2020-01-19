@@ -1,6 +1,6 @@
 package com.ltei.audiodownloader.model.audiosource
 
-import com.ltei.audiodownloader.misc.util.transferTo
+import com.ltei.audiodownloader.misc.transferTo
 import com.ltei.audiodownloader.model.DownloadProgressInterceptor
 import com.ltei.audiodownloader.service.RunnerService
 import org.schabi.newpipe.extractor.stream.StreamInfo

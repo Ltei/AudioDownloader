@@ -1,6 +1,6 @@
 package com.ltei.audiodownloader.misc
 
-import com.ltei.audiodownloader.misc.debug.Logger
+import com.ltei.ljubase.debug.Logger
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody
 import org.schabi.newpipe.extractor.downloader.Downloader

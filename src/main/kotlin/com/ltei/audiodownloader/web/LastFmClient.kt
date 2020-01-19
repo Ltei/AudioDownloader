@@ -2,8 +2,8 @@ package com.ltei.audiodownloader.web
 
 import com.google.gson.Gson
 import com.google.gson.JsonParser
-import com.ltei.audiodownloader.misc.util.fromJson
-import com.ltei.audiodownloader.misc.util.getOrNull
+import com.ltei.ljugson.fromJson
+import com.ltei.ljugson.getOrNull
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.GET

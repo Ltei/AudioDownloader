@@ -2,12 +2,12 @@ package com.ltei.audiodownloader.ui.view
 
 import com.ltei.audiodownloader.model.Preferences
 import com.ltei.audiodownloader.ui.Application
-import com.ltei.audiodownloader.ui.misc.stringBinding
-import com.ltei.audiodownloader.ui.view.base.BaseButton
-import com.ltei.audiodownloader.ui.view.base.BaseLabel
-import com.ltei.audiodownloader.ui.res.UIConstants
-import com.ltei.audiodownloader.ui.res.UIStylizer
-import com.ltei.audiodownloader.ui.view.base.InputBlockableView
+import com.ltei.audiodownloader.ui.UIConstants
+import com.ltei.audiodownloader.ui.UIStylizer
+import com.ltei.lteijfxutils.misc.InputBlockableView
+import com.ltei.lteijfxutils.utils.stringBinding
+import com.ltei.lteijfxutils.view.BaseButton
+import com.ltei.lteijfxutils.view.BaseLabel
 import javafx.event.EventHandler
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
