@@ -1,13 +1,15 @@
 rootProject.name = 'AudioDownloader'
+include(':audiodownloader')
 
-def includeLjuProject(String name) {
+apply from: 'localpaths.gradle'
+
+def includeProject(String path, String name) {
     include(':' + name)
-    project(':' + name).projectDir = new File("C:\\Home\\Workspaces\\LteiUtils\\LteiJavaUtils\\" + name)
+    project(':' + name).projectDir = new File(path + name)
 }
 
-include(':lteijfxutils')
-project(':lteijfxutils').projectDir = new File("C:\\Home\\Workspaces\\LteiUtils\\LteiJfxUtils\\lteijfxutils")
+includeProject(JAVA_UTILS_PATH, "ljubase")
+includeProject(JAVA_UTILS_PATH, "ljuutils")
+includeProject(JAVA_UTILS_PATH, "ljugson")
 
-includeLjuProject("ljubase")
-includeLjuProject("ljuutils")
-includeLjuProject("ljugson")
+includeProject(JFX_UTILS_PATH, "lteijfxutils")
