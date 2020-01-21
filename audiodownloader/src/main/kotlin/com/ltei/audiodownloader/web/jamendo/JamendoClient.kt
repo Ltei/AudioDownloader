@@ -1,5 +1,6 @@
-package com.ltei.audiodownloader.web
+package com.ltei.audiodownloader.web.jamendo
 
+import com.ltei.audiodownloader.web.WebGlobals
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.GET
@@ -7,14 +8,21 @@ import retrofit2.http.Query
 
 interface JamendoClient {
 
-    @GET("$API_VERSION/tracks/file")
-    fun getTrackFile(
+    @GET("$API_VERSION/artists")
+    fun getArtist(
         @Query("client_id") clientId: String,
-        @Query("fullcount") fullCount: Boolean,
-        @Query("audioformat") audioFormat: AudioFormat,
-        @Query("action") action: Action,
-        @Query("id") id: Int
-    ): Call<ResponseBody>
+        @Query("format") format: String? = null,
+        @Query("callback") callback: String? = null,
+        @Query("offset") offset: Int = 0,
+        @Query("limit") limit: String = "all",
+        @Query("order") order: String? = null,
+        @Query("fullcount") fullCount: Boolean? = null,
+        @Query("id") id: String? = null,
+        @Query("name") name: String? = null,
+        @Query("namesearch") nameSearch: String? = null,
+        @Query("hasimage") hasImage: HasImage? = null,
+        @Query("datebetween") dateBetween: String? = null
+    ): Call<GetObjectResult<Artist>>
 
     @GET("$API_VERSION/tracks")
     fun getTrack(
@@ -55,18 +63,49 @@ interface JamendoClient {
         @Query("include") include: String? = null,
         @Query("groupby") groupBy: String? = null,
         @Query("boost") boost: String? = null
-    ): Call<ResponseBody>
+    ): Call<GetObjectResult<Track>>
 
     // Static
 
     companion object {
         private const val HOST = "http://api.jamendo.com/"
         private const val API_VERSION = "v3.0"
+
+        private const val CLIENT_ID = "58856388"
+        private const val CLIENT_SECRET = "5533180884ce862e7400d5a01c8b7af0"
+
         val IMAGE_SIZES = listOf(25, 35, 50, 55, 60, 65, 70, 75, 85, 100, 130, 150, 200, 300, 400, 500, 600)
-        val instance: JamendoClient = WebGlobals.buildRetrofitClient(HOST)
+        val instance: JamendoClient =
+            WebGlobals.buildRetrofitClient(HOST)
+
+        fun getArtist(
+            format: Format? = null,
+            callback: String? = null,
+            offset: Int = 0,
+            limit: Int? = null,
+            order: Order? = null,
+            fullCount: Boolean? = null,
+            id: String? = null,
+            name: String? = null,
+            nameSearch: String? = null,
+            hasImage: HasImage? = null,
+            dateBetween: String? = null
+        ) = instance.getArtist(
+            clientId = CLIENT_ID,
+            callback = callback,
+            format = format?.value,
+            offset = offset,
+            limit = if (limit == null || limit < 0) "all" else limit.toString(),
+            order = order?.value,
+            fullCount = fullCount,
+            id = id,
+            name = name,
+            nameSearch = nameSearch,
+            hasImage = hasImage,
+            dateBetween = dateBetween
+        )
 
         fun getTrack(
-            clientId: String,
             format: Format? = null,
             offset: Int = 0,
             limit: Int? = null,
@@ -103,8 +142,8 @@ interface JamendoClient {
             include: Include? = null,
             groupBy: GroupBy? = null,
             boost: Boost? = null
-        ): Call<ResponseBody> = instance.getTrack(
-            clientId = clientId,
+        ) = instance.getTrack(
+            clientId = CLIENT_ID,
             format = format?.value,
             offset = offset,
             limit = if (limit == null || limit < 0) "all" else limit.toString(),
@@ -144,101 +183,6 @@ interface JamendoClient {
         )
     }
 
-    enum class Order(val value: String) {
-        Relevance("relevance"),
-        BuzzRate("buzzrate"),
-        DownloadsWeek("downloads_week"),
-        DownloadsMonth("downloads_month"),
-        DownloadsTotal("downloads_total"),
-        ListensWeek("listens_week"),
-        ListensMonth("listens_month"),
-        ListensTotal("listens_total"),
-        PopularityWeek("popularity_week"),
-        PopularityMonth("popularity_month"),
-        PopularityTotal("popularity_total"),
-        Name("name"),
-        AlbumName("album_name"),
-        ArtistName("artist_name"),
-        ReleaseDate("releasedate"),
-        Duration("duration"),
-        Id("id")
-    }
 
-    enum class Type(val value: String) {
-        Single("single"),
-        AlbumTrack("albumtrack")
-    }
-
-    enum class Featured(val value: String) {
-        True("true"),
-        One("1")
-    }
-
-    enum class AudioFormat(val value: String) {
-        MP31("mp31"),
-        MP32("mp32"),
-        OGG("ogg"),
-        FLAC("flac")
-    }
-
-    enum class Action(val value: String) {
-        DOWNLOAD("download"),
-        STREAM("stream")
-    }
-
-    enum class Format(val value: String) {
-        XML("xml"),
-        JSON("json"),
-        JSON_PRETTY("jsonpretty")
-    }
-
-
-    enum class AcousticElectric(val value: String) {
-        Acoustic("acoustic"),
-        Electric("electric")
-    }
-
-    enum class VocalInstrumental(val value: String) {
-        Vocal("vocal"),
-        Instrumental("instrumental")
-    }
-
-    enum class Gender(val value: String) {
-        Male("male"),
-        Female("female")
-    }
-
-    enum class Speed(val value: String) {
-        VeryLow("verylow"),
-        Low("low"),
-        Medium("medium"),
-        High("high"),
-        VeryHigh("veryhigh")
-    }
-
-    enum class Include(val value: String) {
-        Licenses("licenses"),
-        MusicInfo("musicinfo"),
-        Stats("stats"),
-        Lyrics("lyrics")
-    }
-
-    enum class GroupBy(val value: String) {
-        ArtistId("artist_id"),
-        AlbumId("album_id")
-    }
-
-    enum class Boost(val value: String) {
-        BuzzRate("buzzrate"),
-        DownloadsWeek("downloads_week"),
-        DownloadsMonth("downloads_month"),
-        DownloadsTotal("downloads_total"),
-        ListensWeek("listens_week"),
-        ListensMonth("listens_month"),
-        ListensTotal("listens_total"),
-        PopularityWeek("popularity_week"),
-        PopularityMonth("popularity_month"),
-        PopularityTotal("popularity_total")
-    }
 
 }

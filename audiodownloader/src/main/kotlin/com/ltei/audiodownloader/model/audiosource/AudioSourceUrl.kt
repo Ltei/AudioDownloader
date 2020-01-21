@@ -34,9 +34,10 @@ abstract class AudioSourceUrl(
                     host.contains("soundcloud", ignoreCase = true) -> SoundCloudAudioSourceUrl(rawUrl)
                     rawUrl.endsWith(".mp3") -> RawAudioSourceUrl(rawUrl, "mp3")
                     rawUrl.endsWith(".wav") -> RawAudioSourceUrl(rawUrl, "wav")
-                    else -> null
+                    else -> RawAudioSourceUrl(rawUrl, "mp3")
                 }
             } catch (e: Exception) {
+                e.printStackTrace()
                 null
             }
         }
