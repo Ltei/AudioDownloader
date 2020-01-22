@@ -5,7 +5,8 @@ import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.ltei.audiodownloader.model.AudioDownload
 import com.ltei.audiodownloader.model.DownloadOutputMode
-import com.ltei.audiodownloader.model.audiosource.AudioSourceUrl
+import com.ltei.audiodownloader.model.audiourl.AudioSourceUrl
+import com.ltei.audiodownloader.model.audiourl.DownloadableAudioUrl
 import com.ltei.audiodownloader.model.serializer.*
 import javafx.beans.property.*
 import java.io.File
@@ -17,9 +18,12 @@ object Globals {
         .registerTypeAdapter(File::class.java, FileAdapter())
         .registerTypeAdapter(AudioDownload.State::class.java, AudioDownloadStateAdapter())
         .registerTypeAdapter(AudioSourceUrl::class.java, AudioSourceUrlAdapter())
+        .registerTypeAdapter(DownloadableAudioUrl::class.java, DownloadableAudioUrlAdapter())
         .registerTypeAdapter(DownloadOutputMode::class.java, DownloadOutputModeAdapter())
 
         .registerTypeAdapter(object : TypeToken<ObjectProperty<File>>() {}.type, ObjectPropertyAdapter.create<File>())
+        .registerTypeAdapter(object : TypeToken<ObjectProperty<AudioSourceUrl>>() {}.type, ObjectPropertyAdapter.create<AudioSourceUrl>())
+        .registerTypeAdapter(object : TypeToken<ObjectProperty<DownloadableAudioUrl>>() {}.type, ObjectPropertyAdapter.create<DownloadableAudioUrl>())
         .registerTypeAdapter(object : TypeToken<ObjectProperty<DownloadOutputMode>>() {}.type, ObjectPropertyAdapter.create<DownloadOutputMode>())
 
         .registerTypeAdapter(StringProperty::class.java, StringPropertyAdapter())

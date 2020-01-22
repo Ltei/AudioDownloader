@@ -1,4 +1,4 @@
-package com.ltei.audiodownloader.model.audiosource
+package com.ltei.audiodownloader.model.audiourl
 
 import com.ltei.audiodownloader.misc.getParsedQuery
 import java.net.URL

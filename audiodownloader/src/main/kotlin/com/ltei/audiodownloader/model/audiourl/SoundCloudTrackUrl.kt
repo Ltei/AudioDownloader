@@ -1,4 +1,4 @@
-package com.ltei.audiodownloader.model.audiosource
+package com.ltei.audiodownloader.model.audiourl
 
 import com.ltei.audiodownloader.model.AudioMetadata
 import com.ltei.audiodownloader.web.SoundCloudScrapper

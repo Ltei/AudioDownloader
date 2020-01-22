@@ -1,4 +1,4 @@
-package com.ltei.audiodownloader.model.audiosource
+package com.ltei.audiodownloader.model.audiourl
 
 import com.github.kiulian.downloader.model.YoutubeVideo
 import com.github.kiulian.downloader.model.formats.AudioFormat

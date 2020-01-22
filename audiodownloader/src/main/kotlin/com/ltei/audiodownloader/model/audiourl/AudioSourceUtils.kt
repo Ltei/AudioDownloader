@@ -1,4 +1,4 @@
-package com.ltei.audiodownloader.model.audiosource
+package com.ltei.audiodownloader.model.audiourl
 
 import com.ltei.audiodownloader.misc.transferTo
 import com.ltei.audiodownloader.model.DownloadProgressInterceptor
