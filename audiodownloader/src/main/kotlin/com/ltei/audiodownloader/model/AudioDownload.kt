@@ -1,12 +1,14 @@
 package com.ltei.audiodownloader.model
 
 import com.ltei.audiodownloader.model.audiosource.AudioSourceUrl
+import com.ltei.audiodownloader.model.audiosource.DownloadableAudioUrl
 import java.io.File
 
 data class AudioDownload(
     var source: AudioSourceUrl,
+    val downloadedUrl: DownloadableAudioUrl,
     var outputFile: File,
-    var state: State = State.Waiting
+    var state: State
 ) {
 
     sealed class State(val name: String) {

@@ -3,11 +3,24 @@ package com.ltei.audiodownloader.model.audiosource
 import com.ltei.audiodownloader.misc.transferTo
 import com.ltei.audiodownloader.model.DownloadProgressInterceptor
 import com.ltei.audiodownloader.service.RunnerService
+import org.schabi.newpipe.extractor.stream.AudioStream
 import org.schabi.newpipe.extractor.stream.StreamInfo
 import java.io.File
 import java.net.URL
 
 internal object AudioSourceUtils {
+
+    fun getBestStream(streamInfo: StreamInfo): AudioStream? {
+        val streams = streamInfo.audioStreams.sortedByDescending { stream ->
+            try {
+                val connection = URL(stream.getUrl()).openConnection()
+                connection.contentLengthLong
+            } catch (e: Exception) {
+                -1L
+            }
+        }
+        return streams.firstOrNull()
+    }
 
     fun downloadFromNewPipeStreamInfo(
         streamInfo: StreamInfo,
@@ -42,5 +55,7 @@ internal object AudioSourceUtils {
         )
         outputStream.close()
     }
+
+    fun getRawUrlFormat(url: String): String? = url.takeLastWhile { it != '.' } // TODO
 
 }

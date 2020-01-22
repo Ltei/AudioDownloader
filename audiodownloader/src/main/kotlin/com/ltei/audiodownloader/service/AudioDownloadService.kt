@@ -1,9 +1,9 @@
 package com.ltei.audiodownloader.service
 
-import com.ltei.ljubase.debug.Logger
 import com.ltei.audiodownloader.model.AudioDownload
 import com.ltei.audiodownloader.model.DownloadProgressInterceptor
 import com.ltei.audiodownloader.model.Model
+import com.ltei.ljubase.debug.Logger
 
 object AudioDownloadService {
 
@@ -47,7 +47,7 @@ object AudioDownloadService {
             download.state = AudioDownload.State.Starting
             listeners.forEach { it.onDownloadUpdate(download) }
             val progressState = AudioDownload.State.InProgress(-1, -1)
-            download.source.downloadTo(download.outputFile, interceptor = object : DownloadProgressInterceptor {
+            download.downloadedUrl.downloadTo(download.outputFile, interceptor = object : DownloadProgressInterceptor {
                 override fun shouldStop(): Boolean = isKilled
                 override fun onProgress(progress: Long, total: Long) {
                     progressState.progress = progress

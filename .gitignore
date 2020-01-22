@@ -5,4 +5,5 @@ gradle
 gradlew
 gradlew.bat
 out
-src/main/resources
+audiodownloader/src/main/resources
+audiodownloader/src/main/kotlin/com/ltei/audiodownloader/_trash

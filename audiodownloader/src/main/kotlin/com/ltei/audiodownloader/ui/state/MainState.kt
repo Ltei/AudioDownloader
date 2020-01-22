@@ -6,6 +6,7 @@ import com.ltei.audiodownloader.model.AudioDownload
 import com.ltei.audiodownloader.model.Model
 import com.ltei.audiodownloader.model.Preferences
 import com.ltei.audiodownloader.model.audiosource.AudioSourceUrl
+import com.ltei.audiodownloader.model.audiosource.MultiAudioSourceUrl
 import com.ltei.audiodownloader.service.AudioDownloadService
 import com.ltei.audiodownloader.service.RunnerService
 import com.ltei.audiodownloader.ui.Application
@@ -42,8 +43,8 @@ class MainState : State, AudioDownloadService.Listener {
 
     private val downloadButton = BaseButton("Download", onMouseClicked = EventHandler {
         val url = audioSourceUrlField.text
-        val audioUrl = AudioSourceUrl.parse(url)
-        if (audioUrl != null) download(audioUrl)
+        val audioUrl = MultiAudioSourceUrl.parse(url)
+        if (audioUrl != null) download(audioUrl.getAudios().first())
     })
 
     private val audioDownloadListView = AudioDownloadListView()
@@ -115,8 +116,8 @@ class MainState : State, AudioDownloadService.Listener {
 
     init {
         audioSourceUrlField.textProperty().addListener { _, _, newValue ->
-            val audioUrl = AudioSourceUrl.parse(newValue)
-            sourceLabel.text = "Source : ${audioUrl?.sourceName}"
+            val audioUrl = MultiAudioSourceUrl.parse(newValue)
+            sourceLabel.text = "Source : ${audioUrl?.label}"
         }
     }
 
@@ -139,15 +140,15 @@ class MainState : State, AudioDownloadService.Listener {
     private fun download(audioUrl: AudioSourceUrl) {
         setLoadingState(true)
         thread {
-            val info = RunnerService.runWithTimeout(15000L, block = {
-                audioUrl.info.value
+            val (downloadableUrl, metadata) = RunnerService.runWithTimeout(15000L, block = {
+                audioUrl.getDownloadableUrlAndMetadata()
             })
-            var outputFileName = info.metadata.title ?: "Unknown title"
-            info.metadata.artists?.let { artists -> outputFileName = "${ListUtils.format(artists)} - $outputFileName" }
+            var outputFileName = metadata.title ?: "Unknown title"
+            metadata.artists?.let { artists -> outputFileName = "${ListUtils.format(artists)} - $outputFileName" }
 
             Platform.runLater {
                 setLoadingState(false)
-                val state = CreateDownloadState(outputFileName, info.metadata) { result ->
+                val state = CreateDownloadState(outputFileName, metadata) { result ->
                     if (result != null) {
                         if (result.fileName.isNotBlank()) {
                             if (Preferences.instance.storeAudioInfo.value) {
@@ -155,16 +156,21 @@ class MainState : State, AudioDownloadService.Listener {
                                     outputDirectory = Preferences.instance.outputDirectory.value,
                                     fileName = result.fileName
                                 )
-                                val infoJson = Globals.persistenceGson.toJson(info)
+                                val infoJson = Globals.persistenceGson.toJson(metadata)
                                 infoFile.writeText(infoJson)
                             }
 
                             val audioFile = Preferences.instance.downloadOutputMode.value.getAudioFile(
                                 outputDirectory = Preferences.instance.outputDirectory.value,
                                 fileName = result.fileName,
-                                extension = info.format
+                                extension = downloadableUrl.format
                             )
-                            val audioDownload = AudioDownload(audioUrl, audioFile)
+                            val audioDownload = AudioDownload(
+                                source = audioUrl,
+                                downloadedUrl = downloadableUrl,
+                                outputFile = audioFile,
+                                state = AudioDownload.State.Waiting
+                            )
                             synchronized(Model.instance.audioDownloads) {
                                 Model.instance.audioDownloads.add(0, audioDownload)
                             }

@@ -2,9 +2,9 @@ package com.ltei.audiodownloader.model.serializer
 
 import com.google.gson.*
 import com.ltei.audiodownloader.model.audiosource.AudioSourceUrl
-import com.ltei.audiodownloader.model.audiosource.RawAudioSourceUrl
-import com.ltei.audiodownloader.model.audiosource.SoundCloudAudioSourceUrl
-import com.ltei.audiodownloader.model.audiosource.YouTubeAudioSourceUrl
+import com.ltei.audiodownloader.model.audiosource.RawAudioUrl
+import com.ltei.audiodownloader.model.audiosource.YouTubeVideoUrl
+import com.ltei.audiodownloader.model.audiosource.SoundCloudTrackUrl
 import java.lang.reflect.Type
 
 class AudioSourceUrlAdapter : JsonSerializer<AudioSourceUrl>, JsonDeserializer<AudioSourceUrl> {
@@ -24,18 +24,18 @@ class AudioSourceUrlAdapter : JsonSerializer<AudioSourceUrl>, JsonDeserializer<A
         context: JsonSerializationContext
     ): JsonElement {
         return when (src) {
-            is RawAudioSourceUrl -> JsonObject().apply {
+            is RawAudioUrl -> JsonObject().apply {
                 addProperty(PROP_TYPE, TYPE_RAW)
-                addProperty(PROP_RAW_URL, src.rawUrl)
+                addProperty(PROP_RAW_URL, src.url)
                 addProperty(PROP_FORMAT, src.format)
             }
-            is YouTubeAudioSourceUrl -> JsonObject().apply {
+            is YouTubeVideoUrl -> JsonObject().apply {
                 addProperty(PROP_TYPE, TYPE_YOUTUBE)
                 addProperty(PROP_VIDEO_ID, src.videoId)
             }
-            is SoundCloudAudioSourceUrl -> JsonObject().apply {
+            is SoundCloudTrackUrl -> JsonObject().apply {
                 addProperty(PROP_TYPE, TYPE_SOUNDCLOUD)
-                addProperty(PROP_RAW_URL, src.rawUrl)
+                addProperty(PROP_RAW_URL, src.url)
             }
             else -> throw IllegalStateException()
         }
@@ -51,15 +51,15 @@ class AudioSourceUrlAdapter : JsonSerializer<AudioSourceUrl>, JsonDeserializer<A
             TYPE_RAW -> {
                 val rawUrl = jsonObj[PROP_RAW_URL].asString
                 val format = jsonObj[PROP_FORMAT].asString
-                RawAudioSourceUrl(rawUrl, format)
+                RawAudioUrl(rawUrl, format)
             }
             TYPE_YOUTUBE -> {
                 val videoId = jsonObj[PROP_VIDEO_ID].asString
-                YouTubeAudioSourceUrl(videoId)
+                YouTubeVideoUrl(videoId)
             }
             TYPE_SOUNDCLOUD -> {
                 val rawUrl = jsonObj[PROP_RAW_URL].asString
-                SoundCloudAudioSourceUrl(rawUrl)
+                SoundCloudTrackUrl(rawUrl)
             }
             else -> throw IllegalStateException()
         }
