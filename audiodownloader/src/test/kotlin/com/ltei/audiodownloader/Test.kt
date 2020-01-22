@@ -4,7 +4,9 @@ import com.google.gson.GsonBuilder
 import com.ltei.audiodownloader.web.jamendo.Boost
 import com.ltei.audiodownloader.web.jamendo.JamendoClient
 import com.ltei.audiodownloader.web.jamendo.Order
+import com.ltei.ljuutils.utils.ListUtils
 import org.junit.Test
+import java.net.URL
 
 class Test {
 
@@ -20,12 +22,17 @@ class Test {
 //            }
 //        })
 
-        val tracks = JamendoClient.getTrack(
-            xArtist = "Kanye West",
-            order = Order.BuzzRate,
-            boost = Boost.BuzzRate
-        ).execute().body()!!
-        println(GsonBuilder().setPrettyPrinting().create().toJson(tracks))
+//        val tracks = JamendoClient.getTrack(
+//            xArtist = "Kanye West",
+//            order = Order.BuzzRate,
+//            boost = Boost.BuzzRate
+//        ).execute().body()!!
+//        println(GsonBuilder().setPrettyPrinting().create().toJson(tracks))
+
+        val url = URL("https://www.youtube.com/channel/UCahJ8PJViRpQppsYPlAAYKg")
+        println(url.host)
+        println(ListUtils.format(url.path.split("/")))
+        println(url.query)
     }
 
 }

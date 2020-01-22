@@ -10,7 +10,7 @@ class YouTubeVideoUrl(
     val videoId: String
 ) : MultiAudioSourceUrl, AudioSourceUrl {
     override val label get() = "YouTube video"
-    override val url: String = "www.youtube.com?v=$videoId"
+    override val url: String = "www.youtube.com/watch?v=$videoId"
     override fun getAudios() = listOf(this)
 
     override fun getDownloadableUrl(): DownloadableAudioUrl {

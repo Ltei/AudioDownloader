@@ -16,8 +16,18 @@ interface MultiAudioSourceUrl {
                 val host = url.host
                 val query = url.getParsedQuery()
                 when {
-                    host.contains("youtube", ignoreCase = true) -> YouTubeVideoUrl(query.getValue("v"))
+                    host.contains("youtube", ignoreCase = true) -> when {
+                        url.path.startsWith("/watch") -> YouTubeVideoUrl(query.getValue("v"))
+                        url.path.startsWith("/channel") -> YouTubeChannelUrl(url.path.split("/")[2])
+                        else -> null
+                    }
                     host.contains("soundcloud", ignoreCase = true) -> SoundCloudTrackUrl(rawUrl)
+                    host.contains("jamendo", ignoreCase = true) -> when {
+                        url.path.startsWith("/track") -> JamendoTrack(url.path.split("/")[2])
+                        url.path.startsWith("/album") -> JamendoAlbum(url.path.split("/")[2])
+                        url.path.startsWith("/artist") -> JamendoArtist(url.path.split("/")[2])
+                        else -> null
+                    }
                     else -> RawAudioUrl(rawUrl)
                 }
             } catch (e: Exception) {
