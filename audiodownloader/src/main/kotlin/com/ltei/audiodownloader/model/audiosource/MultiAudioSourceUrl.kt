@@ -4,6 +4,11 @@ import com.ltei.audiodownloader.misc.getParsedQuery
 import com.ltei.audiodownloader.model.audiosource.jamendo.JamendoAlbum
 import com.ltei.audiodownloader.model.audiosource.jamendo.JamendoArtist
 import com.ltei.audiodownloader.model.audiosource.jamendo.JamendoTrack
+import com.ltei.audiodownloader.model.audiosource.soundcloud.SoundCloudArtist
+import com.ltei.audiodownloader.model.audiosource.soundcloud.SoundCloudSet
+import com.ltei.audiodownloader.model.audiosource.soundcloud.SoundCloudTrack
+import com.ltei.audiodownloader.model.audiosource.youtube.YouTubeChannel
+import com.ltei.audiodownloader.model.audiosource.youtube.YouTubeVideo
 import java.net.URL
 
 interface MultiAudioSourceUrl {
@@ -24,17 +29,22 @@ interface MultiAudioSourceUrl {
                         url.path.startsWith("/channel") -> YouTubeChannel(url.path.split("/")[2])
                         else -> null
                     }
-                    host.contains("soundcloud", ignoreCase = true) -> SoundCloudTrack(rawUrl)
+                    host.contains("soundcloud", ignoreCase = true) -> {
+                        val split = url.path.split("/")
+                        when (split.size) {
+                            2 -> SoundCloudArtist(split[1])
+                            3 -> SoundCloudTrack(split[1], split[2])
+                            4 -> when (split[2]) {
+                                 "sets" -> SoundCloudSet(split[1], split[3])
+                                else -> null
+                            }
+                            else -> null
+                        }
+                    }
                     host.contains("jamendo", ignoreCase = true) -> when {
-                        url.path.startsWith("/track") -> JamendoTrack(
-                            url.path.split("/")[2]
-                        )
-                        url.path.startsWith("/album") -> JamendoAlbum(
-                            url.path.split("/")[2]
-                        )
-                        url.path.startsWith("/artist") -> JamendoArtist(
-                            url.path.split("/")[2]
-                        )
+                        url.path.startsWith("/track") -> JamendoTrack(url.path.split("/")[2])
+                        url.path.startsWith("/album") -> JamendoAlbum(url.path.split("/")[2])
+                        url.path.startsWith("/artist") -> JamendoArtist(url.path.split("/")[2])
                         else -> null
                     }
                     else -> RawAudioUrl(rawUrl)

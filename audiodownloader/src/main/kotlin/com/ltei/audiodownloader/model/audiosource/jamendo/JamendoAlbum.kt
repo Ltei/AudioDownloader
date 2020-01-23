@@ -7,8 +7,8 @@ import com.ltei.audiodownloader.web.jamendo.JamendoClient
 data class JamendoAlbum(
     val albumId: String
 ) : MultiAudioSourceUrl {
-    override val label: String = "Jamendo channel"
-    override val url: String = "https://www.jamendo.com/channel/$albumId"
+    override val label: String = "Jamendo album ($albumId)"
+    override val url: String = "https://www.jamendo.com/album/$albumId"
 
     override fun getAudios(): List<AudioSourceUrl> {
         val response = JamendoClient.getTrack(albumId = albumId).execute()

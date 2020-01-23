@@ -10,7 +10,7 @@ data class JamendoTrack(
     val trackId: String
 ): MultiAudioSourceUrl,
     AudioSourceUrl {
-    override val label: String = "Jamendo track"
+    override val label: String = "Jamendo track ($trackId)"
     override val url: String = "https://www.jamendo.com/track/$trackId"
     override fun getAudios() = listOf(this)
 

@@ -10,9 +10,11 @@ import org.schabi.newpipe.extractor.ServiceList
 import org.schabi.newpipe.extractor.stream.StreamInfo
 
 class SoundCloudTrack(
-    override val url: String
+    val artistId: String,
+    val trackId: String
 ) : MultiAudioSourceUrl, AudioSourceUrl {
-    override val label get() = "SoundCloud track"
+    override val url get() = "https://soundcloud.com/$artistId/$trackId"
+    override val label get() = "SoundCloud track ($artistId - $trackId)"
     override fun getAudios() = listOf(this)
 
     override fun getDownloadableUrl(): DownloadableAudioUrl {

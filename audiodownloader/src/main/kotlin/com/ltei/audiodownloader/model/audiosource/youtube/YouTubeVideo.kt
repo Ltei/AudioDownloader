@@ -12,7 +12,7 @@ import com.ltei.audiodownloader.model.audiosource.MultiAudioSourceUrl
 class YouTubeVideo(
     val videoId: String
 ) : MultiAudioSourceUrl, AudioSourceUrl {
-    override val label get() = "YouTube video"
+    override val label get() = "YouTube video ($videoId)"
     override val url: String = "www.youtube.com/watch?v=$videoId"
     override fun getAudios() = listOf(this)
 
