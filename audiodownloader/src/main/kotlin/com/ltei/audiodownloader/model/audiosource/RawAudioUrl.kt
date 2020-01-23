@@ -1,4 +1,4 @@
-package com.ltei.audiodownloader.model.audiourl
+package com.ltei.audiodownloader.model.audiosource
 
 import com.ltei.audiodownloader.model.AudioMetadata
 
@@ -8,6 +8,6 @@ class RawAudioUrl(
 ) : MultiAudioSourceUrl, AudioSourceUrl, DownloadableAudioUrl {
     override val label get() = "Raw url"
     override fun getAudios() = listOf(this)
-    override fun getDownloadableUrl() = DownloadableAudioUrl.Impl(url, format)
+    override fun getDownloadableUrl() = this
     override fun getMetadata() = AudioMetadata()
 }

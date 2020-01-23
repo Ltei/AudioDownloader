@@ -1,11 +1,15 @@
-package com.ltei.audiodownloader.model.audiourl
+package com.ltei.audiodownloader.model.audiosource.soundcloud
 
 import com.ltei.audiodownloader.model.AudioMetadata
+import com.ltei.audiodownloader.model.audiosource.AudioSourceUrl
+import com.ltei.audiodownloader.model.audiosource.AudioSourceUtils
+import com.ltei.audiodownloader.model.audiosource.DownloadableAudioUrl
+import com.ltei.audiodownloader.model.audiosource.MultiAudioSourceUrl
 import com.ltei.audiodownloader.web.SoundCloudScrapper
 import org.schabi.newpipe.extractor.ServiceList
 import org.schabi.newpipe.extractor.stream.StreamInfo
 
-class SoundCloudTrackUrl(
+class SoundCloudTrack(
     override val url: String
 ) : MultiAudioSourceUrl, AudioSourceUrl {
     override val label get() = "SoundCloud track"

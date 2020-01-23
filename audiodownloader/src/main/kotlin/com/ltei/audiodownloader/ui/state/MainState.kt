@@ -5,8 +5,8 @@ import com.ltei.audiodownloader.misc.RecurrentTask
 import com.ltei.audiodownloader.model.AudioDownload
 import com.ltei.audiodownloader.model.Model
 import com.ltei.audiodownloader.model.Preferences
-import com.ltei.audiodownloader.model.audiourl.AudioSourceUrl
-import com.ltei.audiodownloader.model.audiourl.MultiAudioSourceUrl
+import com.ltei.audiodownloader.model.audiosource.AudioSourceUrl
+import com.ltei.audiodownloader.model.audiosource.MultiAudioSourceUrl
 import com.ltei.audiodownloader.service.AudioDownloadService
 import com.ltei.audiodownloader.service.RunnerService
 import com.ltei.audiodownloader.ui.Application

@@ -1,6 +1,9 @@
-package com.ltei.audiodownloader.model.audiourl
+package com.ltei.audiodownloader.model.audiosource.youtube
 
-data class YouTubeChannelUrl(
+import com.ltei.audiodownloader.model.audiosource.AudioSourceUrl
+import com.ltei.audiodownloader.model.audiosource.MultiAudioSourceUrl
+
+data class YouTubeChannel(
     val channelId: String
 ): MultiAudioSourceUrl {
     override val label: String = "YouTube channel"

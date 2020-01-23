@@ -37,7 +37,7 @@ data class Track(
     @SerializedName("album_id") val albumId: String,
     @SerializedName("license_ccurl") val licenseCcurl: String,
     @SerializedName("position") val position: Int,
-    @SerializedName("releasedata") val releaseData: String,
+    @SerializedName("releasedata") val releaseDate: String,
     @SerializedName("album_image") val albumImage: String,
     @SerializedName("audio") val audio: String,
     @SerializedName("audiodownload") val audioDownload: String,

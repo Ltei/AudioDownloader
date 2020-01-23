@@ -1,7 +1,7 @@
 package com.ltei.audiodownloader.model.serializer
 
 import com.google.gson.*
-import com.ltei.audiodownloader.model.audiourl.DownloadableAudioUrl
+import com.ltei.audiodownloader.model.audiosource.DownloadableAudioUrl
 import java.lang.reflect.Type
 
 class DownloadableAudioUrlAdapter : JsonSerializer<DownloadableAudioUrl>, JsonDeserializer<DownloadableAudioUrl> {

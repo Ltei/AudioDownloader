@@ -1,12 +1,15 @@
-package com.ltei.audiodownloader.model.audiourl
+package com.ltei.audiodownloader.model.audiosource.youtube
 
 import com.github.kiulian.downloader.model.YoutubeVideo
 import com.github.kiulian.downloader.model.formats.AudioFormat
 import com.github.kiulian.downloader.model.quality.AudioQuality
 import com.ltei.audiodownloader.Globals
 import com.ltei.audiodownloader.model.AudioMetadata
+import com.ltei.audiodownloader.model.audiosource.AudioSourceUrl
+import com.ltei.audiodownloader.model.audiosource.DownloadableAudioUrl
+import com.ltei.audiodownloader.model.audiosource.MultiAudioSourceUrl
 
-class YouTubeVideoUrl(
+class YouTubeVideo(
     val videoId: String
 ) : MultiAudioSourceUrl, AudioSourceUrl {
     override val label get() = "YouTube video"
