@@ -5,7 +5,7 @@ import com.ltei.audiodownloader.model.audiosource.AudioSourceUrl
 import com.ltei.audiodownloader.model.audiosource.AudioSourceUtils
 import com.ltei.audiodownloader.model.audiosource.DownloadableAudioUrl
 import com.ltei.audiodownloader.model.audiosource.MultiAudioSourceUrl
-import com.ltei.audiodownloader.web.SoundCloudScrapper
+import com.ltei.audiodownloader.web.soundcloud.SoundCloudScrapper
 import org.schabi.newpipe.extractor.ServiceList
 import org.schabi.newpipe.extractor.stream.StreamInfo
 

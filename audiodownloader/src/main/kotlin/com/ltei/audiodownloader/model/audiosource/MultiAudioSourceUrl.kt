@@ -5,7 +5,7 @@ import com.ltei.audiodownloader.model.audiosource.jamendo.JamendoAlbum
 import com.ltei.audiodownloader.model.audiosource.jamendo.JamendoArtist
 import com.ltei.audiodownloader.model.audiosource.jamendo.JamendoTrack
 import com.ltei.audiodownloader.model.audiosource.soundcloud.SoundCloudArtist
-import com.ltei.audiodownloader.model.audiosource.soundcloud.SoundCloudSet
+import com.ltei.audiodownloader.model.audiosource.soundcloud.SoundCloudPlaylist
 import com.ltei.audiodownloader.model.audiosource.soundcloud.SoundCloudTrack
 import com.ltei.audiodownloader.model.audiosource.youtube.YouTubeChannel
 import com.ltei.audiodownloader.model.audiosource.youtube.YouTubeVideo
@@ -35,7 +35,7 @@ interface MultiAudioSourceUrl {
                             2 -> SoundCloudArtist(split[1])
                             3 -> SoundCloudTrack(split[1], split[2])
                             4 -> when (split[2]) {
-                                 "sets" -> SoundCloudSet(split[1], split[3])
+                                 "sets" -> SoundCloudPlaylist(split[1], split[3])
                                 else -> null
                             }
                             else -> null

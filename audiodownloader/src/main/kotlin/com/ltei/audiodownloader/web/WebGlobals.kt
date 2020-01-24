@@ -30,9 +30,9 @@ object WebGlobals {
         .baseUrl(baseUrl)
         .build()
 
-    inline fun <reified T> buildRetrofitClient(baseUrl: String, client: OkHttpClient = defaultClient): T = Retrofit.Builder()
+    inline fun <reified T> buildRetrofitClient(baseUrl: String, client: OkHttpClient = defaultClient, gson: Gson = Gson()): T = Retrofit.Builder()
         .client(client)
-        .addConverterFactory(GsonConverterFactory.create(Gson()))
+        .addConverterFactory(GsonConverterFactory.create(gson))
         .baseUrl(baseUrl)
         .build()
         .create(T::class.java)

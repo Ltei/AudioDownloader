@@ -7,3 +7,4 @@ gradlew.bat
 out
 audiodownloader/src/main/resources
 audiodownloader/src/main/kotlin/com/ltei/audiodownloader/_trash
+audiodownloader/src/test
