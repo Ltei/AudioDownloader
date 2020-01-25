@@ -18,7 +18,7 @@ class SoundCloudTrack(
 ) : AudioSourceUrlProvider, AudioSourceUrl {
     override val url: String get() = getUrl(artistPermalink, permalink)
     override val label: String get() = getLabel(artistPermalink, permalink)
-    override fun getAudioSourceUrls() = CompletableFuture.completedFuture(listOf<AudioSourceUrl>(this))
+    override fun getAudioSourceUrls(): CompletableFuture<List<AudioSourceUrl>> = CompletableFuture.completedFuture(listOf<AudioSourceUrl>(this))
 
     override fun getDownloadableUrl(): CompletableFuture<DownloadableAudioUrl> = CompletableFuture.supplyAsync {
         val streamInfo = StreamInfo.getInfo(ServiceList.SoundCloud, url)

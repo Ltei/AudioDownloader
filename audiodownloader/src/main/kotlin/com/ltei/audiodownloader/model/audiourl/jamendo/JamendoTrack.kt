@@ -16,7 +16,7 @@ data class JamendoTrack(
     AudioSourceUrl {
     override val url: String get() = getUrl(trackId)
     override val label: String get() = getLabel(trackId)
-    override fun getAudioSourceUrls() = CompletableFuture.completedFuture(listOf<AudioSourceUrl>(this))
+    override fun getAudioSourceUrls(): CompletableFuture<List<AudioSourceUrl>> = CompletableFuture.completedFuture(listOf<AudioSourceUrl>(this))
 
     override fun getDownloadableUrl(): CompletableFuture<DownloadableAudioUrl> =
         getTrackCall().toFuture().thenApply { result ->

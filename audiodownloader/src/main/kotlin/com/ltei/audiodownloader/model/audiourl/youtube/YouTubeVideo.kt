@@ -18,7 +18,7 @@ class YouTubeVideo(
 
     override val label get() = "YouTube video ($videoId)"
     override val url: String = "www.youtube.com/watch?v=$videoId"
-    override fun getAudioSourceUrls() = CompletableFuture.completedFuture(listOf<AudioSourceUrl>(this))
+    override fun getAudioSourceUrls(): CompletableFuture<List<AudioSourceUrl>> = CompletableFuture.completedFuture(listOf<AudioSourceUrl>(this))
 
     override fun getDownloadableUrl(): CompletableFuture<DownloadableAudioUrl> = CompletableFuture.supplyAsync {
         val video = Globals.youTubeDownloader.getVideo(videoId)

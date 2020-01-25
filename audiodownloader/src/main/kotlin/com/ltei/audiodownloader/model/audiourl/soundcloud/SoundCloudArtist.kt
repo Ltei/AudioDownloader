@@ -1,6 +1,5 @@
 package com.ltei.audiodownloader.model.audiourl.soundcloud
 
-import com.ltei.audiodownloader.misc.toFuture
 import com.ltei.audiodownloader.model.audiourl.AudioSourceUrl
 import com.ltei.audiodownloader.model.audiourl.AudioSourceUrlProvider
 import com.ltei.audiodownloader.web.soundcloud.SoundCloudClient
@@ -15,9 +14,8 @@ class SoundCloudArtist(
     override val label: String get() = getLabel(permalink)
 
     override fun getAudioSourceUrls(): CompletableFuture<List<AudioSourceUrl>> =
-        SoundCloudClient.resolveResource(url).toFuture().thenApply { user ->
-            user as SoundCloudClient.User
-            val tracks = SoundCloudClient.getUserTracks(user.id).toFuture().get()
+        SoundCloudClient.resolveResource<SoundCloudClient.User>(url).thenApply { user ->
+            val tracks = SoundCloudClient.getUserTracks(user!!.id).get()
             tracks.map { SoundCloudTrack(user.permalink, it.permalink) }
         }
 

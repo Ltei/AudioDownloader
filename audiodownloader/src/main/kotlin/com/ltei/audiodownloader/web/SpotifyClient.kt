@@ -7,7 +7,7 @@ import java.net.URI
 
 class SpotifyClient {
 
-    val spotify = SpotifyApi.builder()
+    val spotify: SpotifyApi = SpotifyApi.builder()
         .setClientId("dcc361538cf44a2492d2884f05e7f40e")
         .setClientSecret("5498695c997849b49be56c2381639674")
         .setRedirectUri(URI.create("http://localhost:8888/callback"))

@@ -1,6 +1,7 @@
 package com.ltei.audiodownloader
 
 import com.github.kiulian.downloader.YoutubeDownloader
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.ltei.audiodownloader.model.AudioDownload
@@ -14,7 +15,7 @@ import java.io.File
 object Globals {
     val youTubeDownloader = YoutubeDownloader()
 
-    val persistenceGson = GsonBuilder()
+    val persistenceGson: Gson = GsonBuilder()
         .registerTypeAdapter(File::class.java, FileAdapter())
         .registerTypeAdapter(AudioDownload.State::class.java, AudioDownloadStateAdapter())
         .registerTypeAdapter(AudioSourceUrl::class.java, AudioSourceUrlAdapter())

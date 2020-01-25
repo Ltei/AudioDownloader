@@ -12,6 +12,7 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 import java.lang.reflect.Type
+import java.util.concurrent.CompletableFuture
 
 interface SoundCloudClient {
 
@@ -87,7 +88,7 @@ interface SoundCloudClient {
             clientId = CLIENT_ID
         ).toFuture()
 
-        fun <T: ResolvableResource> resolveResource(url: String) = instance.resolveResource(
+        fun <T: ResolvableResource> resolveResource(url: String): CompletableFuture<T?> = instance.resolveResource(
             clientId = CLIENT_ID,
             url = url
         ).toFuture().thenApply { it as T? }

@@ -13,7 +13,7 @@ import java.io.IOException
 
 
 object DownloaderImpl: Downloader() {
-    private val userAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:43.0) Gecko/20100101 Firefox/43.0"
+    private const val userAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:43.0) Gecko/20100101 Firefox/43.0"
     private val logger = Logger(DownloaderImpl::class.java)
     private val mCookies: String? = null
     private val client = OkHttpClient.Builder().build()
