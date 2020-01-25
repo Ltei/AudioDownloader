@@ -38,7 +38,7 @@ data class JamendoTrack(
     fun getTrackCall() = JamendoClient.getTrack(id = trackId)
 
     companion object {
-        val urlPathRegex = Regex("track/(${SoundCloudUtils.permalinkRegex})")
+        val urlPathRegex = Regex("^/track/(${SoundCloudUtils.permalinkRegex})$")
 
         fun parse(url: URL) = if (isValidUrlHost(url.host)) {
             urlPathRegex.find(url.path)?.let { result ->

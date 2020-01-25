@@ -2,8 +2,6 @@ package com.ltei.audiodownloader.model.audiosource.youtube
 
 import com.ltei.audiodownloader.model.audiosource.AudioSourceUrl
 import com.ltei.audiodownloader.model.audiosource.MultiAudioSourceUrl
-import com.ltei.audiodownloader.model.audiosource.soundcloud.SoundCloudArtist
-import com.ltei.audiodownloader.model.audiosource.soundcloud.SoundCloudPlaylist
 import com.ltei.audiodownloader.web.soundcloud.SoundCloudUtils
 import java.net.URL
 import java.util.concurrent.CompletableFuture
@@ -19,7 +17,7 @@ data class YouTubeChannel(
     }
 
     companion object {
-        val urlPathRegex = Regex("channel/(${SoundCloudUtils.permalinkRegex})")
+        val urlPathRegex = Regex("^/channel/(${SoundCloudUtils.permalinkRegex})")
 
         fun parse(url: URL) = if (isValidUrlHost(url.host)) {
             urlPathRegex.find(url.path)?.let { result ->

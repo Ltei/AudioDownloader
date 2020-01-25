@@ -23,7 +23,7 @@ class SoundCloudPlaylist(
         }
 
     companion object {
-        val urlPathRegex = Regex("(${SoundCloudUtils.permalinkRegex})/sets/(${SoundCloudUtils.permalinkRegex})")
+        val urlPathRegex = Regex("^/(${SoundCloudUtils.permalinkRegex})/sets/(${SoundCloudUtils.permalinkRegex})$")
 
         fun parse(url: URL) = if (isValidUrlHost(url.host)) {
             urlPathRegex.find(url.path)?.let { result ->
@@ -42,7 +42,7 @@ class SoundCloudPlaylist(
         } else null
 
         fun getUrl(artistPermalink: String, permalink: String) = "https://soundcloud.com/$artistPermalink/sets/$permalink"
-        fun getLabel(artistPermalink: String, permalink: String) = "SoundCloud playlist ($artistPermalink - $permalink)"
+        fun getLabel(artistPermalink: String, permalink: String) = "SoundCloud playlist ($artistPermalink/$permalink)"
 
         fun isValidUrlHost(host: String) = host.contains("soundcloud", ignoreCase = true)
         fun isValidUrl(url: URL) = isValidUrlHost(url.host) && urlPathRegex.matches(url.path)

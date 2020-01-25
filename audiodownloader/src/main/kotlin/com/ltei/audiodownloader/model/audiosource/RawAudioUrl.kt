@@ -8,13 +8,14 @@ class RawAudioUrl(
     override val url: String,
     override val format: String = AudioSourceUtils.getRawUrlFormat(url) ?: "mp3"
 ) : MultiAudioSourceUrl, AudioSourceUrl, DownloadableAudioUrl {
-    override val label get() = "Raw url"
+    override val label get() = LABEL
     override fun getAudios() = CompletableFuture.completedFuture(listOf<AudioSourceUrl>(this))
     override fun getDownloadableUrl(): CompletableFuture<DownloadableAudioUrl> = CompletableFuture.completedFuture(this)
     override fun getMetadata() = CompletableFuture.completedFuture(AudioMetadata())
 
     companion object {
+        const val LABEL = "Raw url"
         fun parse(url: URL) = RawAudioUrl(url.toString())
-        fun parseLabel(url: URL) = "Raw url"
+        fun parseLabel(url: URL) = LABEL
     }
 }

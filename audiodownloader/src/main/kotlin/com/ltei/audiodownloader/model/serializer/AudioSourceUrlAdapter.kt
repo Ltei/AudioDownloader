@@ -11,11 +11,6 @@ import java.lang.reflect.Type
 class AudioSourceUrlAdapter : JsonSerializer<AudioSourceUrl>, JsonDeserializer<AudioSourceUrl> {
     companion object {
         private const val PROP_TYPE = "type"
-        private const val PROP_RAW_URL = "rawUrl"
-        private const val PROP_FORMAT = "format"
-        private const val PROP_VIDEO_ID = "videoId"
-        private const val PROP_TRACK_ID = "trackId"
-        private const val PROP_ARTIST_ID = "artistId"
 
         private const val TYPE_RAW = "TYPE_RAW"
         private const val TYPE_YOUTUBE_VIDEO = "TYPE_YOUTUBE_VIDEO"
@@ -28,23 +23,17 @@ class AudioSourceUrlAdapter : JsonSerializer<AudioSourceUrl>, JsonDeserializer<A
         context: JsonSerializationContext
     ): JsonElement {
         return when (src) {
-            is RawAudioUrl -> JsonObject().apply {
-                addProperty(PROP_TYPE, TYPE_RAW)
-                addProperty(PROP_RAW_URL, src.url)
-                addProperty(PROP_FORMAT, src.format)
+            is RawAudioUrl -> context.serialize(src, RawAudioUrl::class.java).let {
+                it.asJsonObject.apply { addProperty(PROP_TYPE, TYPE_RAW) }
             }
-            is YouTubeVideo -> JsonObject().apply {
-                addProperty(PROP_TYPE, TYPE_YOUTUBE_VIDEO)
-                addProperty(PROP_VIDEO_ID, src.videoId)
+            is YouTubeVideo -> context.serialize(src, YouTubeVideo::class.java).let {
+                it.asJsonObject.apply { addProperty(PROP_TYPE, TYPE_YOUTUBE_VIDEO) }
             }
-            is SoundCloudTrack -> JsonObject().apply {
-                addProperty(PROP_TYPE, TYPE_SOUNDCLOUD_TRACK)
-                addProperty(PROP_ARTIST_ID, src.artistPermalink)
-                addProperty(PROP_TRACK_ID, src.trackPermalink)
+            is SoundCloudTrack -> context.serialize(src, SoundCloudTrack::class.java).let {
+                it.asJsonObject.apply { addProperty(PROP_TYPE, TYPE_SOUNDCLOUD_TRACK) }
             }
-            is JamendoTrack -> JsonObject().apply {
-                addProperty(PROP_TYPE, TYPE_JAMENDO_TRACK)
-                addProperty(PROP_TRACK_ID, src.trackId)
+            is JamendoTrack -> context.serialize(src, JamendoTrack::class.java).let {
+                it.asJsonObject.apply { addProperty(PROP_TYPE, TYPE_JAMENDO_TRACK) }
             }
             else -> throw IllegalStateException()
         }
@@ -57,24 +46,10 @@ class AudioSourceUrlAdapter : JsonSerializer<AudioSourceUrl>, JsonDeserializer<A
     ): AudioSourceUrl {
         val jsonObj = json.asJsonObject
         return when (jsonObj[PROP_TYPE].asString) {
-            TYPE_RAW -> {
-                val rawUrl = jsonObj[PROP_RAW_URL].asString
-                val format = jsonObj[PROP_FORMAT].asString
-                RawAudioUrl(rawUrl, format)
-            }
-            TYPE_YOUTUBE_VIDEO -> {
-                val videoId = jsonObj[PROP_VIDEO_ID].asString
-                YouTubeVideo(videoId)
-            }
-            TYPE_SOUNDCLOUD_TRACK -> {
-                val artistId = jsonObj[PROP_ARTIST_ID].asString
-                val trackId = jsonObj[PROP_TRACK_ID].asString
-                SoundCloudTrack(artistId, trackId)
-            }
-            TYPE_JAMENDO_TRACK -> {
-                val trackId = jsonObj[PROP_TRACK_ID].asString
-                JamendoTrack(trackId)
-            }
+            TYPE_RAW -> context.deserialize(json, RawAudioUrl::class.java)
+            TYPE_YOUTUBE_VIDEO -> context.deserialize(json, YouTubeVideo::class.java)
+            TYPE_SOUNDCLOUD_TRACK -> context.deserialize(json, SoundCloudTrack::class.java)
+            TYPE_JAMENDO_TRACK -> context.deserialize(json, JamendoTrack::class.java)
             else -> throw IllegalStateException()
         }
     }

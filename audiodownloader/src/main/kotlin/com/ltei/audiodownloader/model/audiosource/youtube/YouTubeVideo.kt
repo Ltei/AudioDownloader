@@ -78,8 +78,8 @@ class YouTubeVideo(
         fun getUrl(videoId: String) = "https://www.youtube.com/watch?v=$videoId"
         fun getLabel(videoId: String) = "YouTube video ($videoId)"
 
-        fun isValidUrlHost(host: String) = host.contains("youtube", ignoreCase = true)
-        fun isValidUrlPath(path: String) = path == "watch"
-        fun isValidUrl(url: URL) = isValidUrlHost(url.host) && isValidUrlPath(url.path) && url.getParsedQuery().containsKey("v")
+        fun isValidUrl(url: URL) = url.host.contains("youtube", ignoreCase = true) &&
+                url.path == "/watch" &&
+                url.getParsedQuery().containsKey("v")
     }
 }

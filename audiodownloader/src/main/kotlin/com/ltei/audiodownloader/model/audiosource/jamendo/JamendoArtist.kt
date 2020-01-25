@@ -22,7 +22,7 @@ data class JamendoArtist(
         }
 
     companion object {
-        val urlPathRegex = Regex("artist/(${SoundCloudUtils.permalinkRegex})")
+        val urlPathRegex = Regex("^/artist/(${SoundCloudUtils.permalinkRegex})$")
 
         fun parse(url: URL) = if (isValidUrlHost(url.host)) {
             urlPathRegex.find(url.path)?.let { result ->

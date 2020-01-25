@@ -16,6 +16,7 @@ import com.ltei.audiodownloader.ui.UIStylizer
 import com.ltei.audiodownloader.ui.ovh.AudioDownloadListView
 import com.ltei.audiodownloader.ui.view.OutputDirectoryView
 import com.ltei.ljubase.debug.Logger
+import com.ltei.ljubase.interfaces.ILoadListener
 import com.ltei.ljuutils.utils.ListUtils
 import com.ltei.lteijfxutils.state.State
 import com.ltei.lteijfxutils.utils.asBackground
@@ -29,7 +30,7 @@ import javafx.scene.layout.Priority
 import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox
 
-class MainState : State, AudioDownloadService.Listener {
+class MainState : State, AudioDownloadService.Listener, ILoadListener {
 
     private val settingsButton = BaseButton("Settings", onMouseClicked = EventHandler {
         Application.stateManager.pushState(SettingsState())
@@ -42,10 +43,9 @@ class MainState : State, AudioDownloadService.Listener {
 
     private val downloadButton = BaseButton("Download", onMouseClicked = EventHandler {
         val url = audioSourceUrlField.text
-        MultiAudioSourceUrl.parse(url).thenAcceptHandling { audioUrl ->
-            val audio = audioUrl?.getAudios()?.get()?.firstOrNull()
-            if (audio != null) download(audio)
-        }
+        val audioUrl = MultiAudioSourceUrl.parse(url).get()
+        val audio = audioUrl?.getAudios()?.get()?.firstOrNull()
+        if (audio != null) download(audio)
     })
 
     private val audioDownloadListView = AudioDownloadListView()
@@ -206,6 +206,11 @@ class MainState : State, AudioDownloadService.Listener {
             }
         }
     }
+
+    // ILoadListener
+
+    override fun onStartLoad() = setLoadingState(true)
+    override fun onStopLoad() = setLoadingState(false)
 
     // Static
 
