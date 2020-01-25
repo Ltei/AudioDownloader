@@ -2,7 +2,9 @@ package com.ltei.audiodownloader.web.soundcloud
 
 import org.jsoup.Jsoup
 
-object SoundCloudScrapper {
+object SoundCloudUtils {
+
+    const val permalinkRegex = "[a-zA-Z0-9-]*"
 
     private val audioTitleRegex = Regex("(.*) - (.*) by \\1 .*")
 

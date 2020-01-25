@@ -16,19 +16,31 @@ interface SoundCloudClient {
 
     @GET("/users/{userId}")
     fun getUser(
-        @Path("userId") userId: String,
+        @Path("userId") userId: Int,
         @Query("client_id") clientId: String
     ): Call<User>
 
+    @GET("/users/{userId}/tracks")
+    fun getUserTracks(
+        @Path("userId") userId: Int,
+        @Query("client_id") clientId: String
+    ): Call<List<Track>>
+
+    @GET("/users/{userId}/playlists")
+    fun getUserPlaylists(
+        @Path("userId") userId: Int,
+        @Query("client_id") clientId: String
+    ): Call<List<Track>>
+
     @GET("/tracks/{trackId}")
     fun getTrack(
-        @Path("trackId") trackId: String,
+        @Path("trackId") trackId: Int,
         @Query("client_id") clientId: String
     ): Call<Track>
 
     @GET("/playlists/{playlistId}")
     fun getPlaylist(
-        @Path("playlistId") playlistId: String,
+        @Path("playlistId") playlistId: Int,
         @Query("client_id") clientId: String
     ): Call<Playlist>
 
@@ -40,7 +52,7 @@ interface SoundCloudClient {
 
     companion object {
         private const val ROOT_URL = "https://api-v2.soundcloud.com/"
-        private const val CLIENT_ID = "3UT1QkKC2kBqMLmSnbLbIps1suqeSlRs"
+        private const val CLIENT_ID = "3UT1QkKC2kBqMLmSnbLbIps1suqeSlR"
 
         val instance: SoundCloudClient = WebGlobals.buildRetrofitClient(
             ROOT_URL,
@@ -49,17 +61,27 @@ interface SoundCloudClient {
                 .create()
         )
 
-        fun getUser(userId: String) = instance.getUser(
+        fun getUser(userId: Int) = instance.getUser(
             userId = userId,
             clientId = CLIENT_ID
         )
 
-        fun getTrack(trackId: String) = instance.getTrack(
+        fun getUserTracks(userId: Int) = instance.getUserTracks(
+            userId = userId,
+            clientId = CLIENT_ID
+        )
+
+        fun getUserPlaylists(userId: Int) = instance.getUserPlaylists(
+            userId = userId,
+            clientId = CLIENT_ID
+        )
+
+        fun getTrack(trackId: Int) = instance.getTrack(
             trackId = trackId,
             clientId = CLIENT_ID
         )
 
-        fun getPlaylist(playlistId: String) = instance.getPlaylist(
+        fun getPlaylist(playlistId: Int) = instance.getPlaylist(
             playlistId = playlistId,
             clientId = CLIENT_ID
         )

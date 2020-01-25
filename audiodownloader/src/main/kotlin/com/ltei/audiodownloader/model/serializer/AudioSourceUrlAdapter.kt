@@ -39,8 +39,8 @@ class AudioSourceUrlAdapter : JsonSerializer<AudioSourceUrl>, JsonDeserializer<A
             }
             is SoundCloudTrack -> JsonObject().apply {
                 addProperty(PROP_TYPE, TYPE_SOUNDCLOUD_TRACK)
-                addProperty(PROP_ARTIST_ID, src.artistId)
-                addProperty(PROP_TRACK_ID, src.trackId)
+                addProperty(PROP_ARTIST_ID, src.artistPermalink)
+                addProperty(PROP_TRACK_ID, src.trackPermalink)
             }
             is JamendoTrack -> JsonObject().apply {
                 addProperty(PROP_TYPE, TYPE_JAMENDO_TRACK)

@@ -2,13 +2,13 @@ package com.ltei.audiodownloader.ui.state
 
 import com.ltei.audiodownloader.Globals
 import com.ltei.audiodownloader.misc.RecurrentTask
+import com.ltei.audiodownloader.misc.thenAcceptHandling
 import com.ltei.audiodownloader.model.AudioDownload
 import com.ltei.audiodownloader.model.Model
 import com.ltei.audiodownloader.model.Preferences
 import com.ltei.audiodownloader.model.audiosource.AudioSourceUrl
 import com.ltei.audiodownloader.model.audiosource.MultiAudioSourceUrl
 import com.ltei.audiodownloader.service.AudioDownloadService
-import com.ltei.audiodownloader.service.RunnerService
 import com.ltei.audiodownloader.ui.Application
 import com.ltei.audiodownloader.ui.UIColors
 import com.ltei.audiodownloader.ui.UIConstants
@@ -28,7 +28,6 @@ import javafx.scene.control.TextField
 import javafx.scene.layout.Priority
 import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox
-import kotlin.concurrent.thread
 
 class MainState : State, AudioDownloadService.Listener {
 
@@ -43,8 +42,10 @@ class MainState : State, AudioDownloadService.Listener {
 
     private val downloadButton = BaseButton("Download", onMouseClicked = EventHandler {
         val url = audioSourceUrlField.text
-        val audioUrl = MultiAudioSourceUrl.parse(url)
-        if (audioUrl != null) download(audioUrl.getAudios().first())
+        MultiAudioSourceUrl.parse(url).thenAcceptHandling { audioUrl ->
+            val audio = audioUrl?.getAudios()?.get()?.firstOrNull()
+            if (audio != null) download(audio)
+        }
     })
 
     private val audioDownloadListView = AudioDownloadListView()
@@ -116,8 +117,7 @@ class MainState : State, AudioDownloadService.Listener {
 
     init {
         audioSourceUrlField.textProperty().addListener { _, _, newValue ->
-            val audioUrl = MultiAudioSourceUrl.parse(newValue)
-            sourceLabel.text = "Source : ${audioUrl?.label}"
+            sourceLabel.text = "Source : ${MultiAudioSourceUrl.parseLabel(newValue)}"
         }
     }
 
@@ -139,10 +139,7 @@ class MainState : State, AudioDownloadService.Listener {
 
     private fun download(audioUrl: AudioSourceUrl) {
         setLoadingState(true)
-        thread {
-            val (downloadableUrl, metadata) = RunnerService.runWithTimeout(15000L, block = {
-                audioUrl.getDownloadableUrlAndMetadata()
-            })
+        audioUrl.getDownloadableUrlAndMetadata().thenAcceptHandling({ (downloadableUrl, metadata) ->
             var outputFileName = metadata.title ?: "Unknown title"
             metadata.artists?.let { artists -> outputFileName = "${ListUtils.format(artists)} - $outputFileName" }
 
@@ -181,12 +178,9 @@ class MainState : State, AudioDownloadService.Listener {
                 }
                 Application.stateManager.pushState(state)
             }
-        }.setUncaughtExceptionHandler { _, exception ->
-            Platform.runLater {
-                setLoadingState(false)
-                RunnerService.handle(exception)
-            }
-        }
+        }, fallback = {
+            setLoadingState(false)
+        })
     }
 
     private fun setLoadingState(isLoading: Boolean) {

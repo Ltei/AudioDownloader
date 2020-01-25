@@ -1,27 +1,33 @@
 package com.ltei.audiodownloader.model.audiosource.jamendo
 
+import com.ltei.audiodownloader.misc.toFuture
 import com.ltei.audiodownloader.model.AudioMetadata
 import com.ltei.audiodownloader.model.audiosource.AudioSourceUrl
 import com.ltei.audiodownloader.model.audiosource.DownloadableAudioUrl
 import com.ltei.audiodownloader.model.audiosource.MultiAudioSourceUrl
 import com.ltei.audiodownloader.web.jamendo.JamendoClient
+import com.ltei.audiodownloader.web.soundcloud.SoundCloudUtils
+import java.net.URL
+import java.util.concurrent.CompletableFuture
 
 data class JamendoTrack(
     val trackId: String
 ): MultiAudioSourceUrl,
     AudioSourceUrl {
-    override val label: String = "Jamendo track ($trackId)"
-    override val url: String = "https://www.jamendo.com/track/$trackId"
-    override fun getAudios() = listOf(this)
+    override val url: String get() = getUrl(trackId)
+    override val label: String get() = getLabel(trackId)
+    override fun getAudios() = CompletableFuture.completedFuture(listOf<AudioSourceUrl>(this))
 
-    override fun getDownloadableUrl(): DownloadableAudioUrl {
-        val url = getTrackCall().execute().body()!!.results.first().audioDownload
-        return DownloadableAudioUrl.Impl(url, "mp3")
+    override fun getDownloadableUrl(): CompletableFuture<DownloadableAudioUrl> =
+        getTrackCall().toFuture().thenApply { result ->
+        val url = result.results.first().audioDownload
+        DownloadableAudioUrl.Impl(url, "mp3")
     }
 
-    override fun getMetadata(): AudioMetadata {
-        val track = getTrackCall().execute().body()!!.results.first()
-        return AudioMetadata(
+    override fun getMetadata(): CompletableFuture<AudioMetadata> =
+        getTrackCall().toFuture().thenApply { result ->
+        val track = result.results.first()
+        AudioMetadata(
             title = track.name,
             artists = listOf(track.artistName),
             album = track.albumName
@@ -30,4 +36,28 @@ data class JamendoTrack(
     }
 
     fun getTrackCall() = JamendoClient.getTrack(id = trackId)
+
+    companion object {
+        val urlPathRegex = Regex("track/(${SoundCloudUtils.permalinkRegex})")
+
+        fun parse(url: URL) = if (isValidUrlHost(url.host)) {
+            urlPathRegex.find(url.path)?.let { result ->
+                val trackId = result.groupValues[1]
+                JamendoTrack(trackId = trackId)
+            }
+        } else null
+
+        fun parseLabel(url: URL) = if (isValidUrlHost(url.host)) {
+            urlPathRegex.find(url.path)?.let { result ->
+                val trackId = result.groupValues[1]
+                getLabel(trackId = trackId)
+            }
+        } else null
+
+        fun getUrl(trackId: String) = "https://www.jamendo.com/track/$trackId"
+        fun getLabel(trackId: String) = "Jamendo track ($trackId)"
+
+        fun isValidUrlHost(host: String) = host.contains("jamendo", ignoreCase = true)
+        fun isValidUrl(url: URL) = isValidUrlHost(url.host) && urlPathRegex.matches(url.path)
+    }
 }
