@@ -1,4 +1,4 @@
-package com.ltei.audiodownloader.model.audiosource
+package com.ltei.audiodownloader.model.audiourl
 
 import com.ltei.audiodownloader.model.AudioMetadata
 import java.net.URL
@@ -7,9 +7,9 @@ import java.util.concurrent.CompletableFuture
 class RawAudioUrl(
     override val url: String,
     override val format: String = AudioSourceUtils.getRawUrlFormat(url) ?: "mp3"
-) : MultiAudioSourceUrl, AudioSourceUrl, DownloadableAudioUrl {
+) : AudioSourceUrlProvider, AudioSourceUrl, DownloadableAudioUrl {
     override val label get() = LABEL
-    override fun getAudios() = CompletableFuture.completedFuture(listOf<AudioSourceUrl>(this))
+    override fun getAudioSourceUrls() = CompletableFuture.completedFuture(listOf<AudioSourceUrl>(this))
     override fun getDownloadableUrl(): CompletableFuture<DownloadableAudioUrl> = CompletableFuture.completedFuture(this)
     override fun getMetadata() = CompletableFuture.completedFuture(AudioMetadata())
 

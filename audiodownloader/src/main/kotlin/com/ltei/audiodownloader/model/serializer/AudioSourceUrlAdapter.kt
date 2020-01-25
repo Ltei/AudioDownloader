@@ -1,11 +1,11 @@
 package com.ltei.audiodownloader.model.serializer
 
 import com.google.gson.*
-import com.ltei.audiodownloader.model.audiosource.AudioSourceUrl
-import com.ltei.audiodownloader.model.audiosource.RawAudioUrl
-import com.ltei.audiodownloader.model.audiosource.jamendo.JamendoTrack
-import com.ltei.audiodownloader.model.audiosource.youtube.YouTubeVideo
-import com.ltei.audiodownloader.model.audiosource.soundcloud.SoundCloudTrack
+import com.ltei.audiodownloader.model.audiourl.AudioSourceUrl
+import com.ltei.audiodownloader.model.audiourl.RawAudioUrl
+import com.ltei.audiodownloader.model.audiourl.jamendo.JamendoTrack
+import com.ltei.audiodownloader.model.audiourl.youtube.YouTubeVideo
+import com.ltei.audiodownloader.model.audiourl.soundcloud.SoundCloudTrack
 import java.lang.reflect.Type
 
 class AudioSourceUrlAdapter : JsonSerializer<AudioSourceUrl>, JsonDeserializer<AudioSourceUrl> {

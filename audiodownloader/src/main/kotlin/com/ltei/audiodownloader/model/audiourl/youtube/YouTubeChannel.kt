@@ -1,18 +1,18 @@
-package com.ltei.audiodownloader.model.audiosource.youtube
+package com.ltei.audiodownloader.model.audiourl.youtube
 
-import com.ltei.audiodownloader.model.audiosource.AudioSourceUrl
-import com.ltei.audiodownloader.model.audiosource.MultiAudioSourceUrl
+import com.ltei.audiodownloader.model.audiourl.AudioSourceUrl
+import com.ltei.audiodownloader.model.audiourl.AudioSourceUrlProvider
 import com.ltei.audiodownloader.web.soundcloud.SoundCloudUtils
 import java.net.URL
 import java.util.concurrent.CompletableFuture
 
 data class YouTubeChannel(
     val channelId: String
-) : MultiAudioSourceUrl {
+) : AudioSourceUrlProvider {
     override val url: String get() = getUrl(channelId)
     override val label: String get() = getLabel(channelId)
 
-    override fun getAudios(): CompletableFuture<List<AudioSourceUrl>> {
+    override fun getAudioSourceUrls(): CompletableFuture<List<AudioSourceUrl>> {
         TODO()
     }
 

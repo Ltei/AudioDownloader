@@ -1,20 +1,20 @@
-package com.ltei.audiodownloader.model.audiosource
+package com.ltei.audiodownloader.model.audiourl
 
-import com.ltei.audiodownloader.model.audiosource.jamendo.JamendoAlbum
-import com.ltei.audiodownloader.model.audiosource.jamendo.JamendoArtist
-import com.ltei.audiodownloader.model.audiosource.jamendo.JamendoTrack
-import com.ltei.audiodownloader.model.audiosource.soundcloud.SoundCloudArtist
-import com.ltei.audiodownloader.model.audiosource.soundcloud.SoundCloudPlaylist
-import com.ltei.audiodownloader.model.audiosource.soundcloud.SoundCloudTrack
-import com.ltei.audiodownloader.model.audiosource.youtube.YouTubeChannel
-import com.ltei.audiodownloader.model.audiosource.youtube.YouTubeVideo
+import com.ltei.audiodownloader.model.audiourl.jamendo.JamendoAlbum
+import com.ltei.audiodownloader.model.audiourl.jamendo.JamendoArtist
+import com.ltei.audiodownloader.model.audiourl.jamendo.JamendoTrack
+import com.ltei.audiodownloader.model.audiourl.soundcloud.SoundCloudArtist
+import com.ltei.audiodownloader.model.audiourl.soundcloud.SoundCloudPlaylist
+import com.ltei.audiodownloader.model.audiourl.soundcloud.SoundCloudTrack
+import com.ltei.audiodownloader.model.audiourl.youtube.YouTubeChannel
+import com.ltei.audiodownloader.model.audiourl.youtube.YouTubeVideo
 import java.net.URL
 import java.util.concurrent.CompletableFuture
 
-interface MultiAudioSourceUrl {
+interface AudioSourceUrlProvider {
     val label: String
     val url: String
-    fun getAudios(): CompletableFuture<List<AudioSourceUrl>>
+    fun getAudioSourceUrls(): CompletableFuture<List<AudioSourceUrl>>
 
     companion object {
         fun parseLabel(rawUrl: String): String? {
@@ -31,7 +31,7 @@ interface MultiAudioSourceUrl {
                 ?: RawAudioUrl.parseLabel(url)
         }
 
-        fun parse(rawUrl: String): CompletableFuture<MultiAudioSourceUrl?> {
+        fun parse(rawUrl: String): CompletableFuture<AudioSourceUrlProvider?> {
             if (rawUrl.isBlank()) return CompletableFuture.completedFuture(null)
             return CompletableFuture.supplyAsync {
                 val url = URL(rawUrl)

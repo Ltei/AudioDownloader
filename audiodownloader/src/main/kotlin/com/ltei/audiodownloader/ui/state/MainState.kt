@@ -6,8 +6,8 @@ import com.ltei.audiodownloader.misc.thenAcceptHandling
 import com.ltei.audiodownloader.model.AudioDownload
 import com.ltei.audiodownloader.model.Model
 import com.ltei.audiodownloader.model.Preferences
-import com.ltei.audiodownloader.model.audiosource.AudioSourceUrl
-import com.ltei.audiodownloader.model.audiosource.MultiAudioSourceUrl
+import com.ltei.audiodownloader.model.audiourl.AudioSourceUrl
+import com.ltei.audiodownloader.model.audiourl.AudioSourceUrlProvider
 import com.ltei.audiodownloader.service.AudioDownloadService
 import com.ltei.audiodownloader.ui.Application
 import com.ltei.audiodownloader.ui.UIColors
@@ -43,8 +43,8 @@ class MainState : State, AudioDownloadService.Listener, ILoadListener {
 
     private val downloadButton = BaseButton("Download", onMouseClicked = EventHandler {
         val url = audioSourceUrlField.text
-        val audioUrl = MultiAudioSourceUrl.parse(url).get()
-        val audio = audioUrl?.getAudios()?.get()?.firstOrNull()
+        val audioUrl = AudioSourceUrlProvider.parse(url).get()
+        val audio = audioUrl?.getAudioSourceUrls()?.get()?.firstOrNull()
         if (audio != null) download(audio)
     })
 
@@ -117,7 +117,7 @@ class MainState : State, AudioDownloadService.Listener, ILoadListener {
 
     init {
         audioSourceUrlField.textProperty().addListener { _, _, newValue ->
-            sourceLabel.text = "Source : ${MultiAudioSourceUrl.parseLabel(newValue)}"
+            sourceLabel.text = "Source : ${AudioSourceUrlProvider.parseLabel(newValue)}"
         }
     }
 

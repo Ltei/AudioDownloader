@@ -5,6 +5,7 @@ import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
 import com.google.gson.annotations.SerializedName
+import com.ltei.audiodownloader.misc.toFuture
 import com.ltei.audiodownloader.web.WebGlobals
 import retrofit2.Call
 import retrofit2.http.GET
@@ -64,32 +65,32 @@ interface SoundCloudClient {
         fun getUser(userId: Int) = instance.getUser(
             userId = userId,
             clientId = CLIENT_ID
-        )
+        ).toFuture()
 
         fun getUserTracks(userId: Int) = instance.getUserTracks(
             userId = userId,
             clientId = CLIENT_ID
-        )
+        ).toFuture()
 
         fun getUserPlaylists(userId: Int) = instance.getUserPlaylists(
             userId = userId,
             clientId = CLIENT_ID
-        )
+        ).toFuture()
 
         fun getTrack(trackId: Int) = instance.getTrack(
             trackId = trackId,
             clientId = CLIENT_ID
-        )
+        ).toFuture()
 
         fun getPlaylist(playlistId: Int) = instance.getPlaylist(
             playlistId = playlistId,
             clientId = CLIENT_ID
-        )
+        ).toFuture()
 
-        fun resolveResource(url: String) = instance.resolveResource(
+        fun <T: ResolvableResource> resolveResource(url: String) = instance.resolveResource(
             clientId = CLIENT_ID,
             url = url
-        )
+        ).toFuture().thenApply { it as T? }
     }
 
     // Object model

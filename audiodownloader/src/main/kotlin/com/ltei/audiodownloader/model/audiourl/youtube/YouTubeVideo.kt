@@ -1,4 +1,4 @@
-package com.ltei.audiodownloader.model.audiosource.youtube
+package com.ltei.audiodownloader.model.audiourl.youtube
 
 import com.github.kiulian.downloader.model.YoutubeVideo
 import com.github.kiulian.downloader.model.formats.AudioFormat
@@ -6,19 +6,19 @@ import com.github.kiulian.downloader.model.quality.AudioQuality
 import com.ltei.audiodownloader.Globals
 import com.ltei.audiodownloader.misc.getParsedQuery
 import com.ltei.audiodownloader.model.AudioMetadata
-import com.ltei.audiodownloader.model.audiosource.AudioSourceUrl
-import com.ltei.audiodownloader.model.audiosource.DownloadableAudioUrl
-import com.ltei.audiodownloader.model.audiosource.MultiAudioSourceUrl
+import com.ltei.audiodownloader.model.audiourl.AudioSourceUrl
+import com.ltei.audiodownloader.model.audiourl.DownloadableAudioUrl
+import com.ltei.audiodownloader.model.audiourl.AudioSourceUrlProvider
 import java.net.URL
 import java.util.concurrent.CompletableFuture
 
 class YouTubeVideo(
     val videoId: String
-) : MultiAudioSourceUrl, AudioSourceUrl {
+) : AudioSourceUrlProvider, AudioSourceUrl {
 
     override val label get() = "YouTube video ($videoId)"
     override val url: String = "www.youtube.com/watch?v=$videoId"
-    override fun getAudios() = CompletableFuture.completedFuture(listOf<AudioSourceUrl>(this))
+    override fun getAudioSourceUrls() = CompletableFuture.completedFuture(listOf<AudioSourceUrl>(this))
 
     override fun getDownloadableUrl(): CompletableFuture<DownloadableAudioUrl> = CompletableFuture.supplyAsync {
         val video = Globals.youTubeDownloader.getVideo(videoId)

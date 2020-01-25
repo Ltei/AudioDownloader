@@ -1,8 +1,8 @@
-package com.ltei.audiodownloader.model.audiosource.soundcloud
+package com.ltei.audiodownloader.model.audiourl.soundcloud
 
 import com.ltei.audiodownloader.misc.toFuture
-import com.ltei.audiodownloader.model.audiosource.AudioSourceUrl
-import com.ltei.audiodownloader.model.audiosource.MultiAudioSourceUrl
+import com.ltei.audiodownloader.model.audiourl.AudioSourceUrl
+import com.ltei.audiodownloader.model.audiourl.AudioSourceUrlProvider
 import com.ltei.audiodownloader.web.soundcloud.SoundCloudClient
 import com.ltei.audiodownloader.web.soundcloud.SoundCloudUtils
 import java.net.URL
@@ -10,11 +10,11 @@ import java.util.concurrent.CompletableFuture
 
 class SoundCloudArtist(
     val permalink: String
-) : MultiAudioSourceUrl {
+) : AudioSourceUrlProvider {
     override val url: String get() = getUrl(permalink)
     override val label: String get() = getLabel(permalink)
 
-    override fun getAudios(): CompletableFuture<List<AudioSourceUrl>> =
+    override fun getAudioSourceUrls(): CompletableFuture<List<AudioSourceUrl>> =
         SoundCloudClient.resolveResource(url).toFuture().thenApply { user ->
             user as SoundCloudClient.User
             val tracks = SoundCloudClient.getUserTracks(user.id).toFuture().get()

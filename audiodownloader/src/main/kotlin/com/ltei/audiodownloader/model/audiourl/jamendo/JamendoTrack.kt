@@ -1,10 +1,10 @@
-package com.ltei.audiodownloader.model.audiosource.jamendo
+package com.ltei.audiodownloader.model.audiourl.jamendo
 
 import com.ltei.audiodownloader.misc.toFuture
 import com.ltei.audiodownloader.model.AudioMetadata
-import com.ltei.audiodownloader.model.audiosource.AudioSourceUrl
-import com.ltei.audiodownloader.model.audiosource.DownloadableAudioUrl
-import com.ltei.audiodownloader.model.audiosource.MultiAudioSourceUrl
+import com.ltei.audiodownloader.model.audiourl.AudioSourceUrl
+import com.ltei.audiodownloader.model.audiourl.DownloadableAudioUrl
+import com.ltei.audiodownloader.model.audiourl.AudioSourceUrlProvider
 import com.ltei.audiodownloader.web.jamendo.JamendoClient
 import com.ltei.audiodownloader.web.soundcloud.SoundCloudUtils
 import java.net.URL
@@ -12,11 +12,11 @@ import java.util.concurrent.CompletableFuture
 
 data class JamendoTrack(
     val trackId: String
-): MultiAudioSourceUrl,
+): AudioSourceUrlProvider,
     AudioSourceUrl {
     override val url: String get() = getUrl(trackId)
     override val label: String get() = getLabel(trackId)
-    override fun getAudios() = CompletableFuture.completedFuture(listOf<AudioSourceUrl>(this))
+    override fun getAudioSourceUrls() = CompletableFuture.completedFuture(listOf<AudioSourceUrl>(this))
 
     override fun getDownloadableUrl(): CompletableFuture<DownloadableAudioUrl> =
         getTrackCall().toFuture().thenApply { result ->
