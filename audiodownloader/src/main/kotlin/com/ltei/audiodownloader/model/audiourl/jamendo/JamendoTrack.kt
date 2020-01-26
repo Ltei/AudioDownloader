@@ -1,7 +1,9 @@
 package com.ltei.audiodownloader.model.audiourl.jamendo
 
 import com.ltei.audiodownloader.misc.toFuture
-import com.ltei.audiodownloader.model.AudioMetadata
+import com.ltei.audiodownloader.model.audiometadata.AudioAlbum
+import com.ltei.audiodownloader.model.audiometadata.AudioArtist
+import com.ltei.audiodownloader.model.audiometadata.AudioMetadata
 import com.ltei.audiodownloader.model.audiourl.AudioSourceUrl
 import com.ltei.audiodownloader.model.audiourl.DownloadableAudioUrl
 import com.ltei.audiodownloader.model.audiourl.AudioSourceUrlProvider
@@ -27,12 +29,16 @@ data class JamendoTrack(
     override fun getMetadata(): CompletableFuture<AudioMetadata> =
         getTrackCall().toFuture().thenApply { result ->
         val track = result.results.first()
-        AudioMetadata(
-            title = track.name,
-            artists = listOf(track.artistName),
-            album = track.albumName
-            // releaseDate = track.releaseDate TODO Parse date
-        )
+            AudioMetadata(
+                title = track.name,
+                artists = listOf(
+                    AudioArtist(
+                        name = track.artistName
+                    )
+                ),
+                album = AudioAlbum(title = track.albumName)
+                // releaseDate = track.releaseDate TODO Parse date
+            )
     }
 
     fun getTrackCall() = JamendoClient.getTrack(id = trackId)

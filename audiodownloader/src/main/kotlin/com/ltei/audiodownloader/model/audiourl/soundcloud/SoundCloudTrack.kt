@@ -1,6 +1,8 @@
 package com.ltei.audiodownloader.model.audiourl.soundcloud
 
-import com.ltei.audiodownloader.model.AudioMetadata
+import com.ltei.audiodownloader.model.audiometadata.AudioAlbum
+import com.ltei.audiodownloader.model.audiometadata.AudioArtist
+import com.ltei.audiodownloader.model.audiometadata.AudioMetadata
 import com.ltei.audiodownloader.model.audiourl.AudioSourceUrl
 import com.ltei.audiodownloader.model.audiourl.AudioSourceUtils
 import com.ltei.audiodownloader.model.audiourl.DownloadableAudioUrl
@@ -33,7 +35,15 @@ class SoundCloudTrack(
         val track = SoundCloudClient.resolveResource<SoundCloudClient.Track>(url).get()!!
         AudioMetadata(
             title = track.title,
-            artists = listOf(track.user.fullName),
+            artists = listOf(
+                AudioArtist(
+                    name = track.user.fullName,
+                    images = mutableListOf<String>().apply {
+                        track.user.avatarUrl?.let { add(it) }
+                    }
+                )
+            ),
+            album = AudioAlbum(),
             tags = listOf(track.tagList)
         )
     }

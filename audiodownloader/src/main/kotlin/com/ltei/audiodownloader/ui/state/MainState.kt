@@ -17,7 +17,7 @@ import com.ltei.audiodownloader.ui.ovh.AudioDownloadListView
 import com.ltei.audiodownloader.ui.view.OutputDirectoryView
 import com.ltei.ljubase.debug.Logger
 import com.ltei.ljubase.interfaces.ILoadListener
-import com.ltei.ljuutils.utils.ListUtils
+import com.ltei.ljubase.utils.ListUtils
 import com.ltei.lteijfxutils.state.State
 import com.ltei.lteijfxutils.utils.asBackground
 import com.ltei.lteijfxutils.view.BaseButton

@@ -5,7 +5,7 @@ import com.github.kiulian.downloader.model.formats.AudioFormat
 import com.github.kiulian.downloader.model.quality.AudioQuality
 import com.ltei.audiodownloader.Globals
 import com.ltei.audiodownloader.misc.getParsedQuery
-import com.ltei.audiodownloader.model.AudioMetadata
+import com.ltei.audiodownloader.model.audiometadata.AudioMetadata
 import com.ltei.audiodownloader.model.audiourl.AudioSourceUrl
 import com.ltei.audiodownloader.model.audiourl.DownloadableAudioUrl
 import com.ltei.audiodownloader.model.audiourl.AudioSourceUrlProvider

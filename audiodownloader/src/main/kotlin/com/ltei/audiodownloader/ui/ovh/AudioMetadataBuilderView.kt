@@ -1,17 +1,27 @@
 package com.ltei.audiodownloader.ui.ovh
 
-import com.ltei.audiodownloader.model.AudioMetadata
-import com.ltei.audiodownloader.ui.UIConstants
-import com.ltei.audiodownloader.ui.view.JodaDatePicker
+import com.ltei.audiodownloader.misc.JsonEditor
+import com.ltei.audiodownloader.model.audiometadata.AudioMetadata
 import com.ltei.lteijfxutils.misc.InputBlockableView
 import com.ltei.lteijfxutils.misc.ObjectBuilderViewHolder
-import com.ltei.lteijfxutils.view.BaseLabel
-import com.ltei.lteijfxutils.view.StringListBuilder
-import javafx.scene.Node
-import javafx.scene.control.TextField
-import javafx.scene.layout.Priority
-import javafx.scene.layout.VBox
 
+class AudioMetadataBuilderView(override var boundObject: AudioMetadata? = null) : JsonEditor(),
+    ObjectBuilderViewHolder<AudioMetadata>, InputBlockableView {
+
+    override val rootNode = this
+
+    override fun updateViewFromObject() {
+        rootNode.setJson(boundObject)
+    }
+
+    override fun updateObjectFromView() {
+
+    }
+
+    override var isInputBlocked: Boolean = false
+}
+
+/*
 class AudioMetadataBuilderView(override var boundObject: AudioMetadata? = null) : VBox(),
     ObjectBuilderViewHolder<AudioMetadata>, InputBlockableView {
 
@@ -68,7 +78,7 @@ class AudioMetadataBuilderView(override var boundObject: AudioMetadata? = null) 
         titleView.text = item?.title
         artistsView.boundObject = item?.artists?.toMutableList()
         artistsView.updateViewFromObject()
-        albumView.text = item?.album
+        albumView.text = item?.album?.title
         releaseDateView.jodaDate = item?.releaseDate
         tagsView.boundObject = item?.tags?.toMutableList()
         tagsView.updateViewFromObject()
@@ -87,3 +97,4 @@ class AudioMetadataBuilderView(override var boundObject: AudioMetadata? = null) 
     }
 
 }
+ */

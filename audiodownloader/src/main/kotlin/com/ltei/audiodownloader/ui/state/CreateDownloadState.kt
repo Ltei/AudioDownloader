@@ -1,6 +1,6 @@
 package com.ltei.audiodownloader.ui.state
 
-import com.ltei.audiodownloader.model.AudioMetadata
+import com.ltei.audiodownloader.model.audiometadata.AudioMetadata
 import com.ltei.audiodownloader.model.Preferences
 import com.ltei.audiodownloader.ui.Application
 import com.ltei.audiodownloader.ui.UIColors

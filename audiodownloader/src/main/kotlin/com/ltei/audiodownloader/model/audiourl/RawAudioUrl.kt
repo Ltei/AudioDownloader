@@ -1,6 +1,6 @@
 package com.ltei.audiodownloader.model.audiourl
 
-import com.ltei.audiodownloader.model.AudioMetadata
+import com.ltei.audiodownloader.model.audiometadata.AudioMetadata
 import java.net.URL
 import java.util.concurrent.CompletableFuture
 
@@ -11,7 +11,9 @@ class RawAudioUrl(
     override val label get() = LABEL
     override fun getAudioSourceUrls(): CompletableFuture<List<AudioSourceUrl>> = CompletableFuture.completedFuture(listOf<AudioSourceUrl>(this))
     override fun getDownloadableUrl(): CompletableFuture<DownloadableAudioUrl> = CompletableFuture.completedFuture(this)
-    override fun getMetadata(): CompletableFuture<AudioMetadata> = CompletableFuture.completedFuture(AudioMetadata())
+    override fun getMetadata(): CompletableFuture<AudioMetadata> = CompletableFuture.completedFuture(
+        AudioMetadata()
+    )
 
     companion object {
         const val LABEL = "Raw url"

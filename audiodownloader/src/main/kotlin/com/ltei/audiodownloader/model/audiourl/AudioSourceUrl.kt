@@ -1,7 +1,7 @@
 package com.ltei.audiodownloader.model.audiourl
 
 import com.ltei.audiodownloader.misc.thenCombineToPair
-import com.ltei.audiodownloader.model.AudioMetadata
+import com.ltei.audiodownloader.model.audiometadata.AudioMetadata
 import java.util.concurrent.CompletableFuture
 
 interface AudioSourceUrl {

@@ -6,7 +6,7 @@ object SoundCloudUtils {
 
     const val permalinkRegex = "[a-zA-Z0-9-]*"
 
-    private val audioTitleRegex = Regex("(.*) - (.*) by \\1 .*")
+    private val audioTitleRegex = Regex("^(.*) - (.*) by \\1 .*")
 
     data class AudioInfo(val title: String, val artist: String)
     fun getAudioInfo(audioUrl: String): AudioInfo? {
